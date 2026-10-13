@@ -48,28 +48,29 @@
       </a-form-item>
     </a-modal>
 
-    <a-button type="primary" @click="exportToPDF" id="export-button">{{ $t('resume.exportPdf') }}</a-button>
+    <a-button type="primary" @click="exportToPDF" id="export-button" :loading="exporting" :disabled="!currentComponent">{{ $t('resume.exportPdf') }}</a-button>
     <a-button @click="fitPreview">{{ $t('resume.fitPreview') }}</a-button>
   </div>
   <div class="preview" ref="resumePreview" @mousedown="startDragging" @wheel.prevent="handleZoom">
     <div class="resume-content" :style="contentStyle">
       <!-- 动态渲染当前选中的模板组件 -->
-      <component :is="currentComponent" :colorShades="colorShades" />
+      <ResumePages v-if="currentComponent" ref="paginatedResume" :component="currentComponent"
+        :template-props="templateProps" @ready="fitPreview" @error="paginationError" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { i18n, t } from '../../../i18n';
-import { ref, shallowRef, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch, defineAsyncComponent, type ComponentOptions } from "vue";
+import { t } from '../../../i18n';
+import { ref, shallowRef, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch, defineAsyncComponent } from "vue";
 import { resumeDefaults } from '../../../utils/resumePresentation';
 import { getTemplates } from "../../../utils/getTemplates";
 import type { Template } from "../../../types/template";
 import { useResumeStore } from "../../../store";
 import { generateColorShades } from "../../../utils/colorUtils";
-import html2pdf from "html2pdf.js";
-import { createApp } from 'vue';
-import { getActivePinia, storeToRefs } from 'pinia'
+import { createResumePdf } from '../../../utils/exportResumePdf';
+import ResumePages from '../../../components/ResumePages.vue';
+import { storeToRefs } from 'pinia'
 import { message } from "ant-design-vue";
 // 主题色部分功能
 const resumeStore = useResumeStore();
@@ -113,6 +114,7 @@ const padding_top_bottom = computed({
 })
 // 生成的色阶对象
 const colorShades = ref(generateColorShades(resumeSetting.value.themeColor1));
+const templateProps = computed(() => ({ colorShades: colorShades.value }));
 
 // 多模板切换部分功能
 // 动态导入所有模板组件
@@ -188,59 +190,24 @@ const resumeSettingClickOK = () => {
   message.success(t('notice.settingsSaved'));
 }
 
-// 导出简历为 PDF
-const exportToPDF = async () => {
-  await nextTick();
-  // 创建一个新的容器来渲染简历内容
-  const tempContainer = document.createElement("div");
-  tempContainer.style.position = "absolute";
-  tempContainer.style.top = "-9999px"; // 隐藏容器
-  document.body.appendChild(tempContainer);
-
-  const content = document.createElement("div");
-  content.classList.add("resume-content");
-  Object.assign(content.style, { top: '0', left: '0', boxShadow: 'none' });
-
-  // 渲染当前模板的内容
-  const selectedTemplate = templates.value.find(t => t.id === currentTemplate.value);
-  if (selectedTemplate?.folderPath) {
-    const importPath = `../../../template/${selectedTemplate.folderPath}/index.vue`;
-    const importFunc = templateModules[importPath];
-
-    if (importFunc) {
-      const { default: Component } = await importFunc() as { default: ComponentOptions };
-      const app = createApp(Component, {
-        colorShades: colorShades.value,
-      });
-      app.use(i18n);
-      const pinia = getActivePinia();
-      if (pinia) app.use(pinia);
-      // 挂载组件
-      app.mount(content);
-      tempContainer.appendChild(content);
-      await nextTick();
-      await document.fonts.ready;
-      await Promise.all(Array.from(content.querySelectorAll('img'), image => image.decode().catch(() => undefined)));
-      const options = {
-        filename: "resume.pdf",
-        margin: 0,
-        pagebreak: { mode: ['css', 'legacy'] },
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
-      html2pdf().from(content).set(options).save().finally(() => {
-        app.unmount();
-        // 清理临时容器
-        document.body.removeChild(tempContainer);
-      });
-    } else {
-      console.error(`未找到路径为 ${importPath} 的组件`);
-    }
-
-  }
+// 预览与导出共享独立 A4 页面。每页单独生成画布，不再切割整张长图。
+const paginatedResume = ref<InstanceType<typeof ResumePages>>();
+const exporting = ref(false);
+const paginationError = (error: unknown) => {
+  console.error('Resume pagination failed:', error);
+  message.error(t('notice.pdfFailed'));
 };
-
+const exportToPDF = async () => {
+  if (exporting.value) return;
+  exporting.value = true;
+  try {
+    const pages = await paginatedResume.value?.prepare();
+    if (!pages?.length) throw new Error('Resume pages are not ready');
+    const pdf = await createResumePdf(pages);
+    pdf.save('resume.pdf');
+  } catch (error) { paginationError(error); }
+  finally { exporting.value = false; }
+};
 
 // 简历预览拖拽事件功能
 // 初始化函数，在组件挂载时调用

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
+    "test:browser:types": "vue-tsc --noEmit -p tests/tsconfig.json",
     "dev": "vite --open",
     "build": "vue-tsc -b && vite build",
     "build:prod": "vue-tsc -b && vite build --mode production",
@@ -16,6 +17,7 @@
     "chroma-js": "^3.1.2",
     "crypto-js": "^4.2.0",
     "html2pdf.js": "^0.10.2",
+    "jspdf": "^2.5.2",
     "marked": "^15.0.7",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",

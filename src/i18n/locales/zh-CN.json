@@ -56,7 +56,8 @@
     "filled": "数据已自动填充",
     "loadFailed": "加载数据失败",
     "templatesUnavailable": "无法获取模板列表",
-    "settingsSaved": "设置成功"
+    "settingsSaved": "设置成功",
+    "pdfFailed": "分页或 PDF 导出失败，请检查内容及字体后重试。"
   },
   "label": {
     "nameColon": "姓名：",

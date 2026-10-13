@@ -56,7 +56,8 @@
     "filled": "Sample data added.",
     "loadFailed": "Could not load the data.",
     "templatesUnavailable": "Could not retrieve templates.",
-    "settingsSaved": "Settings saved."
+    "settingsSaved": "Settings saved.",
+    "pdfFailed": "Pagination or PDF export failed. Check the content and fonts, then retry."
   },
   "label": {
     "nameColon": "Name:",

@@ -56,7 +56,8 @@
     "filled": "サンプルデータを入力しました。",
     "loadFailed": "データを読み込めませんでした。",
     "templatesUnavailable": "テンプレート一覧を取得できませんでした。",
-    "settingsSaved": "設定を保存しました。"
+    "settingsSaved": "設定を保存しました。",
+    "pdfFailed": "ページ分割または PDF 出力に失敗しました。内容とフォントを確認して再試行してください。"
   },
   "label": {
     "nameColon": "氏名：",

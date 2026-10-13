@@ -1,0 +1,17 @@
+PASS dev / sample: 2 pages; 79 visible text runs
+PASS dev / large-font-long-paragraph: 6 pages; 535 visible text runs
+PASS dev / small-font-long-url: 2 pages; 507 visible text runs
+PASS templateA / sample: 2 pages; 79 visible text runs
+PASS templateA / large-font-long-paragraph: 6 pages; 536 visible text runs
+PASS templateA / small-font-long-url: 2 pages; 508 visible text runs
+PASS templateB / sample: 2 pages; 79 visible text runs
+PASS templateB / large-font-long-paragraph: 6 pages; 537 visible text runs
+PASS templateB / small-font-long-url: 2 pages; 507 visible text runs
+PASS templateC / sample: 2 pages; 99 visible text runs
+PASS templateC / large-font-long-paragraph: 6 pages; 625 visible text runs
+PASS templateC / small-font-long-url: 2 pages; 538 visible text runs
+PASS templateD / sample: 2 pages; 74 visible text runs
+PASS templateD / large-font-long-paragraph: 6 pages; 530 visible text runs
+PASS templateD / small-font-long-url: 2 pages; 503 visible text runs
+15/15 passed
+PDF PASS: 6 pages, A4; each preview page rendered separately (no download)
