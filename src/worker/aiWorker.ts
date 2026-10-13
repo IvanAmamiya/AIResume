@@ -1,3 +1,5 @@
+import { readChatCompletionStream } from './chatStream';
+
 // 发送请求的worker
 self.onmessage = async (event) => {
   const { taskId, messages, userApiKey, model, API_URL } = event.data;
@@ -27,43 +29,14 @@ self.onmessage = async (event) => {
       return;
     }
 
-    // 读取流式响应数据（sse）
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let currentText = '';  //存结果
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n').filter(line => line.trim() !== '');
-      // 流式响应数据：
-      // {"id":"****","choices":[{"delta":{"content":"我是","function_call":null,"refusal":null,"role":null,"tool_calls":null},
-      // "finish_reason":null,"index":0,"logprobs":null}],"created":1735113344,
-      // "model":"qwen-plus","object":"chat.completion.chunk","service_tier":null,
-      // "system_fingerprint":null,"usage":null}
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const jsonLine = line.slice(6).trim();  // 移除 `data: ` 前缀
-          if (jsonLine === '[DONE]') {
-            // 响应：data: [DONE] ，则结束
-            self.postMessage({ taskId, isComplete: true, result: currentText });
-            return;
-          }
-          try {
-            const parsedLine = JSON.parse(jsonLine);
-            const deltaContent = parsedLine?.choices?.[0]?.delta?.content;
-            if (deltaContent) {
-              currentText += deltaContent;
-              self.postMessage({ taskId, isComplete: false, result: currentText });
-            }
-          } catch (err) {
-            self.postMessage({ taskId, result: '解析流数据时出错，请稍后重试' });
-          }
-        }
-      }
-    }
+    const currentText = await readChatCompletionStream(response.body, (result) => {
+      self.postMessage({ taskId, isComplete: false, result });
+    });
+    self.postMessage({ taskId, isComplete: true, result: currentText });
   } catch (error) {
-    self.postMessage({ taskId, result: '请求失败，请稍后重试' });
+    const result = error instanceof SyntaxError
+      ? '解析流数据时出错，请稍后重试'
+      : '请求失败，请稍后重试';
+    self.postMessage({ taskId, isComplete: true, result });
   }
 };
