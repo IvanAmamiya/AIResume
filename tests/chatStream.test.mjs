@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import test, { after } from 'node:test';
 import ts from 'typescript';
 
-// Compile into an isolated directory so tests also run on the project's Node 18 baseline.
+// 使用项目已有的 TypeScript 编译到临时目录，兼容 Node 18，无需额外测试依赖。
 const temporaryDir = await mkdtemp(join(tmpdir(), 'airesume-stream-test-'));
 after(() => rm(temporaryDir, { recursive: true, force: true }));
 for (const name of ['chatStream', 'aiWorker']) {
@@ -21,6 +21,7 @@ const { readChatCompletionStream } = await import(pathToFileURL(join(temporaryDi
 
 const encoder = new TextEncoder();
 const delta = (content) => JSON.stringify({ choices: [{ delta: { content } }] });
+// 模拟网络传输：每个数组元素都是一次读取到的数据块，不需要调用真实模型 API。
 function stream(chunks) {
   return new ReadableStream({
     start(controller) {
@@ -32,6 +33,7 @@ function stream(chunks) {
 
 test('preserves text for every possible byte boundary, including UTF-8 and [DONE]', async () => {
   const bytes = encoder.encode(`data: ${delta('你好👋')}\n\ndata: ${delta(' résumé 日本語')}\n\ndata: [DONE]\n\n`);
+  // 遍历所有字节切分位置，覆盖 JSON、多字节字符和结束标记被拆开的情况。
   for (let cut = 1; cut < bytes.length; cut++) {
     const updates = [];
     const body = stream([bytes.slice(0, cut), bytes.slice(cut)]);
@@ -91,6 +93,7 @@ test('propagates network errors and releases the reader', async () => {
 });
 
 test('worker sends exactly one terminal response for EOF and errors', async () => {
+  // 模拟 worker 环境和请求结果，确认正常结束与异常都能通知线程池释放任务。
   const originalSelf = globalThis.self;
   const originalFetch = globalThis.fetch;
   const responses = [];
@@ -113,6 +116,7 @@ test('worker sends exactly one terminal response for EOF and errors', async () =
       assert.deepEqual(terminal, [{ taskId: 7, isComplete: true, result: expected }]);
     }
   } finally {
+    // 恢复全局对象，避免模拟环境影响后续测试。
     globalThis.self = originalSelf;
     globalThis.fetch = originalFetch;
   }
