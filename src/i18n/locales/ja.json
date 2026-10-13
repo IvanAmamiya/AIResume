@@ -233,7 +233,9 @@
     "exportJson": "JSONを書き出す",
     "importJson": "JSONを読み込む",
     "star": "このプロジェクトが気に入ったらStarをお願いします！",
-    "jsonOnly": "JSONファイルを選択してください。"
+    "jsonOnly": "JSONファイルを選択してください。",
+    "recommendedLayout": "推奨レイアウトを反映",
+    "fitPreview": "画面に合わせる"
   },
   "summary": {
     "placeholder": "自己紹介を入力"

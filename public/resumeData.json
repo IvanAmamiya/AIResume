@@ -105,12 +105,12 @@
   "resumeSetting": {
     "themeColor1": "#3653c9",
     "themeColor2": "#bdcbff",
-    "fontSize": 13,
-    "sectionSpacing": 6,
-    "paragraphSpacing": 2,
+    "fontSize": 14.5,
+    "sectionSpacing": 20,
+    "paragraphSpacing": 6,
     "currentTemplate": "202501",
-    "padding_top_bottom": 10,
-    "padding_left_right": 15
+    "padding_top_bottom": 32,
+    "padding_left_right": 40
   },
   "currentId": 35,
   "isFirstVisit": false,

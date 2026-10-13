@@ -10,6 +10,7 @@ import router from './router'; // 引入路由
 // 引入全局主题颜色
 import './assets/styles/theme.css';
 import './assets/styles/dark.css';
+import './template/resume.css';
 // 持久化pinia
 import piniaPersist from 'pinia-plugin-persistedstate'
 import lazyLoad from './directives/lazyLoad';

@@ -1,0 +1,59 @@
+/* 固定 A4 纸张，统一字体层级与间距。编辑器和 PDF 导出共享这些样式。 */
+.resume-paper {
+  width: 210mm;
+  min-height: 297mm;
+  max-width: none;
+  margin: 0;
+  padding: var(--padding-top-bottom) var(--padding-left-right);
+  box-sizing: border-box;
+  background: #fff;
+  color: #263244;
+  font-family: Inter, "Segoe UI", "Noto Sans SC", "Noto Sans JP", "Microsoft YaHei", "Yu Gothic", sans-serif;
+  line-height: 1.55;
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+  border-radius: 0;
+}
+.resume-paper *, .resume-paper *::before, .resume-paper *::after { box-sizing: border-box; }
+.resume-paper :is(p, h1, h2, h3, h4, ul, ol) { margin: 0; }
+.resume-paper p + p { margin-top: var(--paragraph-spacing); }
+.resume-paper :is(.section, .resume-section, .content-section, .side-section) { margin-top: var(--section-spacing); }
+.resume-paper :is(.personal-info, .personal-section, .header-content) { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.resume-paper :is(.personal-details, .header-main) { flex: 1; min-width: 0; }
+.resume-paper .name { font-size: 2.15em; font-weight: 700; line-height: 1.2; letter-spacing: -.025em; color: #17283e; margin: 0 0 12px; }
+.resume-paper :is(.personal-details, .info-grid) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 20px; }
+.resume-paper .detail-row { display: contents; }
+.resume-paper .detail-item.name { grid-column: 1 / -1; }
+.resume-paper .detail-item.name { font-size: 2.15em; line-height: 1.2; }
+.resume-paper :is(.detail-item, .info-item, .contact-item, .basic-info, .contact-info) { font-size: .88em; line-height: 1.5; min-width: 0; }
+.resume-paper .detail-item { display: flex; gap: 4px; }
+.resume-paper .label { color: #627087; flex-shrink: 0; }
+.resume-paper .value { min-width: 0; }
+.resume-paper a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.resume-paper :is(.profile-image, .avatar, .avatar-wrapper) { width: 72px; height: 96px; margin: 0; flex-shrink: 0; overflow: hidden; border-radius: 4px; }
+.resume-paper :is(.profile-image img, .avatar img, img.avatar) { display: block; width: 72px; height: 96px; object-fit: cover; border-radius: 4px; }
+.resume-paper :is(.section-title, .side-title) { font-size: 1.1em; font-weight: 700; line-height: 1.35; color: var(--themeColor1); border-bottom: 1px solid #dce2ea; padding: 0 0 6px; margin: 0 0 10px; break-after: avoid; }
+.resume-paper :is(.item, .education-item, .work-item, .project-item, .experience-item, .honor-item) { margin-bottom: 12px; break-inside: avoid; page-break-inside: avoid; }
+.resume-paper :is(.item-header, .project-header, .work-header, .exp-header, .proj-header, .school) { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.resume-paper :is(.subtitle, .institution, .project-name, .company, .school-name, .honor-name, h3) { font-size: 1em; font-weight: 650; color: #263244; }
+.resume-paper :is(.duration, .time, .exp-date, .proj-date, .honor-date, .edu-time) { font-size: .86em; color: #657388; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.resume-paper :is(.degree, .position, .role, .exp-role, .proj-role, .edu-major, .edu-degree) { font-size: .92em; color: #526079; margin: 4px 0; }
+.resume-paper :is(.list, .section-content ul, .skills-list, .skill-list, .description-list, .experience-list) { padding-left: 18px; margin: 0; }
+.resume-paper li { margin: var(--paragraph-spacing) 0; padding-left: 2px; }
+.resume-paper :is(.project-introduction, .project-intro, .proj-brief, .brief, .description, .exp-desc, .proj-details, .summary, .self-evaluation) { text-indent: 0; text-align: left; margin: var(--paragraph-spacing) 0; }
+.resume-paper strong { color: inherit; font-weight: 650; }
+.resume-paper :is(hr, .section-divider) { border: 0; border-top: 1px solid #e2e7ee; margin: 12px 0; }
+.resume-paper .skills-list { display: block; }
+.resume-paper :is(.skills-wrapper, .basic-info, .contact-info) { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.resume-paper .skill-tag { display: block; margin-bottom: var(--paragraph-spacing); }
+.resume-paper .honor-item { display: flex; justify-content: space-between; gap: 16px; }
+.resume-paper .header-decoration { display: none; }
+.resume-paper .resume-header { padding-bottom: 16px; border-bottom: 2px solid var(--themeColor1); }
+.resume-paper .header-main .name { margin-bottom: 8px; }
+.resume-paper :is(.contact-info, .basic-info) { margin-top: 6px; }
+.resume-paper :is(.main-content, .sidebar) { min-width: 0; }
+@media print {
+  .resume-paper { box-shadow: none; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .resume-paper :is(.section-title, .side-title) { break-after: avoid; }
+}

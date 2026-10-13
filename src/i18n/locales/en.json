@@ -233,7 +233,9 @@
     "exportJson": "Export JSON",
     "importJson": "Import JSON",
     "star": "If you like this project, give it a star!",
-    "jsonOnly": "Please upload a JSON file."
+    "jsonOnly": "Please upload a JSON file.",
+    "recommendedLayout": "Apply recommended layout",
+    "fitPreview": "Fit preview"
   },
   "summary": {
     "placeholder": "Enter your summary"

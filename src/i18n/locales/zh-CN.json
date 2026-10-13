@@ -233,7 +233,9 @@
     "exportJson": "导出JSON",
     "importJson": "导入JSON",
     "star": "如果您喜欢这个项目，请给个 Star 吧！",
-    "jsonOnly": "请上传 JSON 文件！"
+    "jsonOnly": "请上传 JSON 文件！",
+    "recommendedLayout": "应用推荐排版",
+    "fitPreview": "适合窗口"
   },
   "summary": {
     "placeholder": "请输入个人总结"

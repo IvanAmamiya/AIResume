@@ -1,6 +1,6 @@
 <template>
   <!-- 简历容器，使用计算属性绑定所有主题相关的样式变量 -->
-  <div class="resume-container" :style="resumeStyle">
+  <div class="resume-container resume-paper resume-template-dev" :style="resumeStyle">
     <!-- 个人信息部分 -->
     <div class="personal-info" :style="sectionStyle('personalInfo')">
       <div class="personal-details">
@@ -112,11 +112,10 @@
 
 <script setup lang="ts">
 import { useResumeStore } from '../../store/useResumeStore';
-import { computed, watch, onMounted } from 'vue';
+import { computed } from 'vue';
+import { useResumePresentation } from '../../composables/useResumePresentation';
 import type { ColorShades } from '../../types/color';
 import { marked } from 'marked';
-import { normalizeSectionOrder } from '../../constants/sectionOrder';
-import type { SectionKey } from '../../types/resume';
 
 // 接受父组件传递的主题色
 const props = defineProps<{
@@ -128,182 +127,16 @@ const resumeStore = useResumeStore();
 const resume = computed(() => resumeStore.$state);
 
 // 合并所有样式变量到一个计算属性
+const { resumeStyle: baseStyle, sectionStyle } = useResumePresentation(resume);
 const resumeStyle = computed(() => ({
-  // 主题色变量
-  '--color-lighter': props.colorShades.lighter,
-  '--color-light': props.colorShades.light,
+  ...baseStyle.value,
   '--color-base': props.colorShades.base,
   '--color-dark': props.colorShades.dark,
   '--color-darker': props.colorShades.darker,
-  // 用户设置的间距变量
-  '--paragraph-spacing': `${resume.value.resumeSetting.paragraphSpacing}px`,
-  '--section-spacing': `${resume.value.resumeSetting.sectionSpacing}px`,
-  '--padding-left-right': `${resume.value.resumeSetting.padding_left_right}px`,
-  '--padding-top-bottom': `${resume.value.resumeSetting.padding_top_bottom}px`,
+  '--color-light': props.colorShades.light,
+  '--color-lighter': props.colorShades.lighter,
 }));
-
-const sectionOrder = computed<SectionKey[]>(() => normalizeSectionOrder(resume.value.sectionOrder));
-
-const sectionStyle = (key: SectionKey, offset = 0) => {
-  const index = sectionOrder.value.indexOf(key);
-  const base = index === -1 ? sectionOrder.value.length : index;
-  return {
-    order: base + offset,
-  };
-};
-// 组件挂载时设置字体大小
-onMounted(() => {
-  updateFontSize();
-});
-
-// 更新字体大小的函数
-const updateFontSize = () => {
-  document.documentElement.style.fontSize = `${resume.value.resumeSetting.fontSize}px`;
-  document.body.style.fontSize = `${resume.value.resumeSetting.fontSize}px`;
-};
-
-// 监听字体大小变化
-watch(
-  () => resume.value.resumeSetting.fontSize,
-  () => {
-    updateFontSize();
-  },
-  { immediate: true }
-);
 </script>
 
 <style scoped>
-/* 基础样式设置 */
-.resume-container {
-  max-width: 210mm;
-  min-height: 297mm;
-  margin: 0 auto;
-  padding: var(--padding-top-bottom) var(--padding-left-right);
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  font-size: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 移除所有动画效果 */
-*,
-*::before,
-*::after {
-  transition: none !important;
-  box-sizing: border-box;
-}
-
-/* 个人信息样式 */
-.personal-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--section-spacing);
-  gap: 20px;
-}
-
-.personal-details {
-  flex: 1;
-}
-
-.detail-row {
-  margin-bottom: var(--paragraph-spacing);
-}
-
-.profile-image img {
-  width: 120px;
-  height: 120px;
-  border-radius: 4px;
-  object-fit: cover;
-}
-
-/* 章节通用样式 */
-.section {
-  margin-bottom: var(--section-spacing);
-}
-
-.section-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: var(--paragraph-spacing);
-  padding-bottom: 4px;
-  border-bottom: 2px solid var(--color-base);
-  color: var(--color-base);
-}
-
-/* 技能列表样式 */
-.skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.skill-item {
-  margin: 0;
-  padding: 0;
-  position: relative;
-  margin-right: 12px;
-  color: var(--color-base);
-}
-
-.skill-item::after {
-  content: '•';
-  position: absolute;
-  right: -10px;
-  color: var(--color-light);
-}
-
-.skill-item:last-child::after {
-  display: none;
-}
-
-/* 项目经验样式 */
-.project-header {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: var(--paragraph-spacing);
-}
-
-.date {
-  color: #666;
-}
-
-/* 荣誉奖项样式 */
-.honor-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0;
-  padding: calc(var(--paragraph-spacing) * 0.5) 0;
-}
-
-/* 段落样式 */
-:deep(p) {
-  margin: 0 !important;
-  padding: 0 !important;
-  font-size: inherit !important;
-}
-
-:deep(p + p) {
-  margin-top: var(--paragraph-spacing) !important;
-}
-
-/* 强调文本样式 */
-:deep(strong) {
-  color: var(--color-base) !important;
-  font-weight: 600;
-}
-
-/* 打印样式优化 */
-@media print {
-  .resume-container {
-    margin: 0;
-    padding: var(--padding-top-bottom) var(--padding-left-right);
-    box-shadow: none;
-    display: flex;
-    flex-direction: column;
-  }
-}
 </style>

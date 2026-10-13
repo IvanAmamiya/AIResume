@@ -76,11 +76,11 @@ export const resumeTemplate = {
   resumeSetting: {
     themeColor1: "#3653c9",  // 主题颜色1（深色）
     themeColor2: "#bdcbff",  // 主题颜色2（浅色）
-    fontSize: 13,
-    sectionSpacing: 1,
-    paragraphSpacing: 0,
+    fontSize: 14.5,
+    sectionSpacing: 20,
+    paragraphSpacing: 6,
     currentTemplate: "202501",
-    padding_top_bottom: 4,
-    padding_left_right: 15
+    padding_top_bottom: 32,
+    padding_left_right: 40
   }
 } as const;

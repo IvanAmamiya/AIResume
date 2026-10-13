@@ -1,5 +1,5 @@
 <template>
-  <div class="resume-container" :style="resumeStyle">
+  <div class="resume-container resume-paper resume-template-a" :style="resumeStyle">
     <!-- 个人信息 -->
     <section class="personal-info" :style="sectionStyle('personalInfo')">
       <div class="personal-details">
@@ -133,10 +133,9 @@
 
 <script setup lang="ts">
 import { useResumeStore } from '../../store/useResumeStore';
-import { computed, watch, onMounted } from 'vue';
+import { computed } from 'vue';
+import { useResumePresentation } from '../../composables/useResumePresentation';
 import { marked } from 'marked';
-import { normalizeSectionOrder } from '../../constants/sectionOrder';
-import type { SectionKey } from '../../types/resume';
 
 // 引入引用的store
 const resumeStore = useResumeStore();
@@ -144,185 +143,10 @@ const resume = computed(() => resumeStore.$state);
 
 
 // 合并所有样式到一个计算属性
-const resumeStyle = computed(() => {
-  return {
-    '--paragraph-spacing': `${resume.value.resumeSetting.paragraphSpacing}px`,
-    '--section-spacing': `${resume.value.resumeSetting.sectionSpacing}px`,
-    '--padding-left-right': `${resume.value.resumeSetting.padding_left_right}px`,
-    '--padding-top-bottom': `${resume.value.resumeSetting.padding_top_bottom}px`,
-    '--themeColor1': resume.value.resumeSetting.themeColor1,
-    '--themeColor2': resume.value.resumeSetting.themeColor2
-  };
-});
-
-const sectionOrder = computed<SectionKey[]>(() => normalizeSectionOrder(resume.value.sectionOrder));
-
-const sectionStyle = (key: SectionKey, offset = 0) => {
-  const index = sectionOrder.value.indexOf(key);
-  const base = index === -1 ? sectionOrder.value.length : index;
-  return {
-    order: base + offset,
-  };
-};
-
-// 组件挂载时设置字体大小
-onMounted(() => {
-  document.documentElement.style.fontSize = `${resume.value.resumeSetting.fontSize}px`;
-});
-
-// 监听字体大小变化
-watch(
-  () => resume.value.resumeSetting.fontSize,
-  (newSize) => {
-    document.documentElement.style.fontSize = `${newSize}px`;
-  }
-);
+const { resumeStyle, sectionStyle } = useResumePresentation(resume);
 </script>
 <!-- 引入外部css -->
 <style scoped>
-@font-face {
-  font-family: 'zql';
-  src: url('./zql.woff2') format('woff2')
-}
 
-.resume-container {
-  max-width: 960px;
-  padding: var(--padding-top-bottom, 20px) var(--padding-left-right, 30px);
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-sizing: border-box;
-  font-family: 'zql', sans-serif;
-  display: flex;
-  flex-direction: column;
-}
-
-:deep(p) {
-  margin-top: var(--paragraph-spacing) !important;
-  margin-bottom: var(--paragraph-spacing) !important;
-}
-
-section {
-  margin-top: var(--section-spacing);
-  margin-bottom: var(--section-spacing);
-}
-
-
-li {
-  list-style: none;
-}
-
-.personal-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.personal-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 4px 0px;
-  flex: 1;
-}
-
-.detail-row {
-  display: contents;
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-}
-
-.label {
-  min-width: 50px;
-  color: #333;
-}
-
-.value {
-  flex: 1;
-  color: #555;
-}
-
-.name {
-  font-size: 1.3rem;
-  font-weight: bold;
-}
-
-.profile-image img {
-  width: 4rem;
-  height: auto;
-  border-radius: 10px;
-  border: 2px solid #f0f0f0;
-}
-
-.section-title {
-  width: 100%;
-  color: var(--themeColor1);
-  background-color: var(--themeColor2);
-  font-size: 1.2rem;
-  padding: 10px;
-  font-weight: bold;
-  border-left: 5px solid var(--themeColor1);
-  margin-bottom: 10px;
-  box-sizing: border-box;
-}
-
-/* 内容项目 */
-.section-content .item {
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-
-}
-
-.subtitle {
-  font-weight: bold;
-  margin-bottom: 5px;
-  word-break: break-all;
-}
-
-.project-header,
-.work-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.section-content ul,
-.skills-list {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.section-content li,
-.skills-list li {
-  line-height: 1.5;
-  word-break: break-word;
-}
-
-.project-introduction {
-  font-weight: lighter;
-  text-indent: 2em;
-}
-
-.self-evaluation {
-  word-break: break-word;
-  text-indent: 2em;
-}
-
-.school {
-  display: flex;
-  justify-content: space-between;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 10px 0;
-}
-
-:deep(strong) {
-  color: var(--themeColor1) !important;
-}
+.resume-template-a .section-title { border-left: 3px solid var(--themeColor1); padding-left: 10px; }
 </style>

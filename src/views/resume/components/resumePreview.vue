@@ -4,6 +4,7 @@
     <!-- 弹框模板设置 -->
     <a-button type="primary" @click="resumeSettingClick" style="margin-right: 10px;">{{ $t('resume.settings') }}</a-button>
     <a-modal v-model:open="open" :title="$t('resume.basicSettings')">
+      <a-button class="layout-preset" @click="applyRecommendedLayout">{{ $t('resume.recommendedLayout') }}</a-button>
       <template #footer>
         <a-button key="submit" type="primary" @click="resumeSettingClickOK">{{ $t('common.confirm') }}</a-button>
       </template>
@@ -48,6 +49,7 @@
     </a-modal>
 
     <a-button type="primary" @click="exportToPDF" id="export-button">{{ $t('resume.exportPdf') }}</a-button>
+    <a-button @click="fitPreview">{{ $t('resume.fitPreview') }}</a-button>
   </div>
   <div class="preview" ref="resumePreview" @mousedown="startDragging" @wheel.prevent="handleZoom">
     <div class="resume-content" :style="contentStyle">
@@ -59,14 +61,15 @@
 
 <script lang="ts" setup>
 import { i18n, t } from '../../../i18n';
-import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch, defineAsyncComponent, type ComponentOptions } from "vue";
+import { ref, shallowRef, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch, defineAsyncComponent, type ComponentOptions } from "vue";
+import { resumeDefaults } from '../../../utils/resumePresentation';
 import { getTemplates } from "../../../utils/getTemplates";
 import type { Template } from "../../../types/template";
 import { useResumeStore } from "../../../store";
 import { generateColorShades } from "../../../utils/colorUtils";
 import html2pdf from "html2pdf.js";
 import { createApp } from 'vue';
-import { storeToRefs } from 'pinia'
+import { getActivePinia, storeToRefs } from 'pinia'
 import { message } from "ant-design-vue";
 // 主题色部分功能
 const resumeStore = useResumeStore();
@@ -117,7 +120,7 @@ const templateModules = import.meta.glob('../../../template/**/index.vue');
 // 模板列表
 const templates = ref<Template[]>([]);
 // 当前渲染的组件
-const currentComponent = ref();
+const currentComponent = shallowRef();
 
 onMounted(async () => {
   try {
@@ -175,6 +178,7 @@ const loadCurrentTemplate = () => {
 
 // 弹框
 let open = ref(false);
+const applyRecommendedLayout = () => resumeStore.updateResumeSetting({ ...resumeDefaults });
 const resumeSettingClick = () => {
   open.value = true;
 }
@@ -195,6 +199,7 @@ const exportToPDF = async () => {
 
   const content = document.createElement("div");
   content.classList.add("resume-content");
+  Object.assign(content.style, { top: '0', left: '0', boxShadow: 'none' });
 
   // 渲染当前模板的内容
   const selectedTemplate = templates.value.find(t => t.id === currentTemplate.value);
@@ -208,13 +213,18 @@ const exportToPDF = async () => {
         colorShades: colorShades.value,
       });
       app.use(i18n);
+      const pinia = getActivePinia();
+      if (pinia) app.use(pinia);
       // 挂载组件
       app.mount(content);
       tempContainer.appendChild(content);
       await nextTick();
+      await document.fonts.ready;
+      await Promise.all(Array.from(content.querySelectorAll('img'), image => image.decode().catch(() => undefined)));
       const options = {
         filename: "resume.pdf",
         margin: 0,
+        pagebreak: { mode: ['css', 'legacy'] },
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -271,6 +281,16 @@ const updateBounds = async () => {
     }
   }
 };
+
+// 按可用宽度适配预览，最多显示为实际尺寸；长简历从顶部开始，仍可拖拽浏览。
+const fitPreview = async () => {
+  await updateBounds();
+  if (!state.contentWidth) return;
+  state.scale = Math.max(.2, Math.min(1, (state.previewWidth - 64) / state.contentWidth));
+  state.translateX = 0;
+  state.translateY = (state.contentHeight * state.scale - state.previewHeight) / 2 + 72;
+};
+watch(currentComponent, async () => { await nextTick(); await fitPreview(); });
 
 // 缩放处理函数
 const handleZoom = (event: WheelEvent) => {
