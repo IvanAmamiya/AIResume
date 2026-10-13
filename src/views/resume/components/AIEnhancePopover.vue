@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { defineProps, computed, ref } from "vue";
 import { sendToQwenAIDialogue } from "../../../api/qwenAPI";
 import { useResumeStore } from "../../../store";
@@ -25,9 +26,9 @@ const canApply = computed(() => {
 
 const showTitle = computed(() => {
   if (!props.description || props.description.length < 5) {
-    return "请输入更多信息后可使用 AI 功能";
+    return t('ai.moreInformation');
   }
-  return "AI 润色";
+  return t('ai.polish');
 });
 
 // 构建 AI 提示语
@@ -58,7 +59,7 @@ const handleAiEnhance = async (Prompt: string, isExtend: boolean) => {
     );
   } catch (error) {
     console.error("AI 处理失败:", error);
-    AIReply.value = "AI 处理失败，请稍后再试。";
+    AIReply.value = t('chat.failed');
     loading.value = false;
   }
 };
@@ -75,11 +76,9 @@ const handleApply = () => {
     <template #content v-if="description && description.length > 4">
       <div class="ai-controls">
         <a-button type="primary" @click="handleAiEnhance(description, false)" :loading="loading && !AIextent"
-          :disabled="loading && AIextent">
-          AI 润色
-        </a-button>
+          :disabled="loading && AIextent"> {{ $t('ai.polish') }} </a-button>
         <a-button type="primary" @click="extend && handleAiEnhance(extend, true)" :loading="loading && AIextent"
-          :disabled="loading && !AIextent">扩展方向</a-button>
+          :disabled="loading && !AIextent">{{ $t('ai.expand') }}</a-button>
       </div>
 
       <div class="ai-content">
@@ -87,9 +86,7 @@ const handleApply = () => {
           <div v-if="AIReply" class="ai-editor">
             <a-textarea v-model:value="AIReply" :auto-size="{ minRows: 4, maxRows: 10 }" :disabled="loading" />
             <div v-if="!AIextent" class="apply-actions">
-              <a-button type="link" size="small" @click="handleApply" :disabled="!canApply || loading">
-                应用
-              </a-button>
+              <a-button type="link" size="small" @click="handleApply" :disabled="!canApply || loading"> {{ $t('common.apply') }} </a-button>
             </div>
           </div>
         </a-spin>

@@ -7,31 +7,31 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'resume',
     component: () => import('@/views/resume/index.vue'),
-    meta: { title: 'AI简历 - 简历制作' }
+    meta: { titleKey: 'title.resume' }
   },
   {
     path: '/resumeDesign',
     name: 'resumeDesign',
     component: () => import('@/views/resumeDesign/index.vue'),
-    meta: { title: 'AI简历 - 简历设计' }
+    meta: { titleKey: 'title.design' }
   },
   {
     path: '/template',
     name: 'template',
     component: () => import('@/views/template/index.vue'),
-    meta: { title: 'AI简历 - 简历模板' }
+    meta: { titleKey: 'title.templates' }
   },
   {
     path: '/setting',
     name: 'setting',
     component: () => import('@/views/setting/index.vue'),
-    meta: { title: 'AI简历 - 网站配置' }
+    meta: { titleKey: 'title.settings' }
   },
   {
     path: '/aiDeep',
     name: 'aiDeep',
     component: () => import('@/views/aiDeep/index.vue'),
-    meta: { title: 'AI简历 - AI深度交流', keepAlive: true }
+    meta: { titleKey: 'title.ai', keepAlive: true }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -44,8 +44,5 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL), // 使用 HTML5 历史模式
   routes
-});
-router.afterEach((to) => {
-  document.title = (to.meta?.title as string) || '默认标题';
 });
 export default router;

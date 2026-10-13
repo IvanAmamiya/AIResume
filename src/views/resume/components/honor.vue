@@ -1,6 +1,6 @@
 <template>
   <a-collapse class="honors-collapse">
-    <a-collapse-panel key="1" header="荣誉奖项">
+    <a-collapse-panel key="1" :header="$t('section.honors')">
       <a-space direction="vertical" style="width: 100%">
         <!-- 荣誉列表 -->
         <div
@@ -18,26 +18,26 @@
               class="item-drag-handle"
               type="button"
               draggable="true"
-              aria-label="拖拽调整荣誉顺序"
+              :aria-label="$t('honors.reorder')"
               @dragstart="onDragStart(index, $event)"
               @dragend="onDragEnd"
             >
               <MenuOutlined />
             </button>
-            <h4>荣誉 #{{ index + 1 }}</h4>
-            <a-popconfirm title="确定要删除当前荣誉奖项？" ok-text="删除" cancel-text="取消" @confirm="removeHonor(honor.id)">
+            <h4>{{ $t('honors.number') }}{{ index + 1 }}</h4>
+            <a-popconfirm :title="$t('honors.confirmDelete')" :ok-text="$t('common.delete')" :cancel-text="$t('common.cancel')" @confirm="removeHonor(honor.id)">
               <template #icon><question-circle-outlined style="color: red" /></template>
-              <a-button type="link" danger>删除</a-button>
+              <a-button type="link" danger>{{ $t('common.delete') }}</a-button>
             </a-popconfirm>
           </div>
 
           <a-form layout="vertical">
             <a-row gutter="24">
               <a-col :span="12">
-                <a-input v-model:value="honor.honorName" placeholder="请输入奖项名称" addonBefore="奖项" />
+                <a-input v-model:value="honor.honorName" :placeholder="$t('honors.namePlaceholder')" :addonBefore="$t('label.award')" />
               </a-col>
               <a-col :span="12">
-                <a-date-picker v-model:value="honor.date" placeholder="获奖时间" style="width: 100%" format="YYYY-MM-DD"
+                <a-date-picker v-model:value="honor.date" :placeholder="$t('honors.date')" style="width: 100%" format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD" />
               </a-col>
             </a-row>
@@ -46,7 +46,7 @@
                     你返回的内容换行表示一个要点，不用md语法，不要隔行，
                     层次清晰分明：\n${honor.description}`" :extend="`下面这个是我简历中的获奖描述，我可以从哪些方面扩展优化？你的回复用文本就行，不需要md语法，给我一些思路：
                     \n${honor.description}`" @update="(content: string) => honor.description = content">
-              <a-textarea v-model:value="honor.description" placeholder="请输入奖项描述"
+              <a-textarea v-model:value="honor.description" :placeholder="$t('honors.descriptionPlaceholder')"
                 :auto-size="{ minRows: 2, maxRows: 5 }" style="margin-top: 16px" />
             </AIEnhancePopover>
           </a-form>
@@ -55,14 +55,14 @@
 
         <!-- 添加按钮 -->
         <a-button type="dashed" block @click="addHonor" style="margin-top: 16px">
-          <plus-outlined /> 添加荣誉奖项
-        </a-button>
+          <plus-outlined /> {{ $t('honors.add') }} </a-button>
       </a-space>
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { computed, ref, watch } from 'vue';
 import { PlusOutlined, MenuOutlined } from '@ant-design/icons-vue';
 import { useResumeStore } from '../../../store';
@@ -86,7 +86,7 @@ const addHonor = () => {
 // 删除荣誉 - 修正删除方法
 const removeHonor = (id: number) => {
   resumeStore.deleteHonor(id)
-  message.success('荣誉奖项删除成功！');
+  message.success(t('honors.deleted'));
 };
 
 const onDragStart = (index: number, event: DragEvent) => {

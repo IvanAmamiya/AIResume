@@ -1,7 +1,7 @@
 <template>
   <div class="resume-edit">
     <a-alert
-      message="现已经支持部分区域渲染markdown或HTML语法（如技能、项目等）"
+      :message="$t('editor.markdown')"
       show-icon
       type="info"
       style="margin-bottom: 10px;"
@@ -20,7 +20,7 @@
         class="module-drag-handle"
         type="button"
         draggable="true"
-        :aria-label="`拖拽调整${module.label}模块顺序`"
+        :aria-label="$t('editor.reorderSection', { name: module.label })"
         @dragstart="onModuleDragStart(module.key, $event)"
         @dragend="onModuleDragEnd"
       >
@@ -36,12 +36,13 @@
       @drop="onDropToEnd"
     >
       <MenuOutlined />
-      <span>拖拽到此处将模块放在最后</span>
+      <span>{{ $t('editor.dropLast') }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { computed, ref } from 'vue';
 import type { Component } from 'vue';
 import { MenuOutlined } from '@ant-design/icons-vue';
@@ -61,25 +62,25 @@ type ModuleDefinition = {
   component: Component;
 };
 
-const moduleDefinitions: ModuleDefinition[] = [
-  { key: 'personalInfo', label: '个人信息', component: personalInfo },
-  { key: 'education', label: '教育经历', component: education },
-  { key: 'projects', label: '项目经历', component: project },
-  { key: 'workExperience', label: '工作经历', component: workExperience },
-  { key: 'skills', label: '专业技能', component: skill },
-  { key: 'honors', label: '荣誉奖项', component: honor },
-  { key: 'summary', label: '自我评价', component: selfEvaluation }
-];
+const moduleDefinitions = computed<ModuleDefinition[]>(() => [
+  { key: 'personalInfo', label: t('section.personal'), component: personalInfo },
+  { key: 'education', label: t('section.education'), component: education },
+  { key: 'projects', label: t('section.projects'), component: project },
+  { key: 'workExperience', label: t('section.work'), component: workExperience },
+  { key: 'skills', label: t('section.skills'), component: skill },
+  { key: 'honors', label: t('section.honors'), component: honor },
+  { key: 'summary', label: t('section.selfEvaluation'), component: selfEvaluation }
+]);
 
-const moduleMap = new Map<SectionKey, ModuleDefinition>(
-  moduleDefinitions.map(definition => [definition.key, definition])
-);
+const moduleMap = computed(() => new Map<SectionKey, ModuleDefinition>(
+  moduleDefinitions.value.map(definition => [definition.key, definition])
+));
 
 const resumeStore = useResumeStore();
 
 const orderedModules = computed(() =>
   resumeStore.sectionOrder
-    .map(key => moduleMap.get(key))
+    .map(key => moduleMap.value.get(key))
     .filter((module): module is ModuleDefinition => Boolean(module))
 );
 

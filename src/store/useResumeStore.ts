@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 // src/store/useResumeStore.ts
 import { defineStore } from 'pinia';
 import { resumeTemplate } from '../data/resumeDataTemplate.ts';
@@ -78,9 +79,9 @@ export const useResumeStore = defineStore('resume', {
           const jsonData = JSON.parse(event.target?.result as string);
           this.$state = jsonData; // 直接覆盖 Pinia 状态
           this.saveToLocalStorage(); // 保存到 localStorage
-          message.success('数据导入成功！');
+          message.success(t('notice.imported'));
         } catch (error) {
-          message.error('数据解析失败，请检查文件格式！');
+          message.error(t('notice.invalidData'));
         }
       };
       reader.readAsText(file);
@@ -91,7 +92,7 @@ export const useResumeStore = defineStore('resume', {
       Object.assign(this.$state, JSON.parse(JSON.stringify(resumeTemplate))); // 彻底重置数据
       this.currentId = 1; // 重置 ID 计数
       this.saveToLocalStorage(); // 更新 localStorage
-      message.success('数据已清空');
+      message.success(t('notice.cleared'));
     },
     // 自动填充数据
     async autoFillData() {
@@ -100,9 +101,9 @@ export const useResumeStore = defineStore('resume', {
         const data = await response.json();
         this.$state = { ...data, isFirstVisit: false }; // 保持 isFirstVisit
         this.saveToLocalStorage();
-        message.success('数据已自动填充');
+        message.success(t('notice.filled'));
       } catch (error) {
-        message.error('加载数据失败');
+        message.error(t('notice.loadFailed'));
       }
     },
     // 保存到 localStorage

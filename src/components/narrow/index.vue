@@ -1,13 +1,13 @@
 <template>
   <div class="narrow-screen">
     <div class="content">
-      <a-result status="warning" title="暂不支持移动端访问" sub-title="抱歉，暂不支持移动端访问，请使用电脑访问以获得最佳体验">
+      <a-result status="warning" :title="$t('mobile.title')" :sub-title="$t('mobile.description')">
         <template #icon>
           <laptop-outlined class="custom-icon" />
         </template>
         <template #extra>
           <div class="github-section">
-            <p class="preview-text">您可以在 GitHub 查看项目预览截图：</p>
+            <p class="preview-text">{{ $t('mobile.preview') }}</p>
             <a href="https://github.com/weidong-repo/AIResume" target="_blank" class="github-link">
               <github-outlined />
               <span>AIResume</span>

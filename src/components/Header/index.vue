@@ -3,36 +3,31 @@
     <nav>
       <ul>
         <li><router-link to="/">
-            <SvgIcon iconName="resume" />
-            简历制作
-          </router-link></li>
+            <SvgIcon iconName="resume" /> {{ $t('nav.resume') }} </router-link></li>
         <li ref="templateStore"><router-link to="/template">
-            <SvgIcon iconName="templateStore" />
-            模板市场
-          </router-link></li>
+            <SvgIcon iconName="templateStore" /> {{ $t('nav.templates') }} </router-link></li>
         <li ref="setting"><router-link to="/aiDeep">
-            <SvgIcon iconName="ai" />
-            AI深度交流
-          </router-link></li>
+            <SvgIcon iconName="ai" /> {{ $t('nav.ai') }} </router-link></li>
         <li ref="setting"><router-link to="/setting">
-            <SvgIcon iconName="setting" />
-            网站配置
-          </router-link></li>
+            <SvgIcon iconName="setting" /> {{ $t('nav.settings') }} </router-link></li>
 
-        <li><router-link to="/resumeDesign">简历模板设计</router-link></li>
+        <li><router-link to="/resumeDesign">{{ $t('nav.design') }}</router-link></li>
       </ul>
     </nav>
+    <LanguageSwitcher />
   </header>
 
   <!-- 漫游式引导 -->
-  <a-tour v-model:open="tourOpen" :steps="tourSteps" :mask="true" :next-button-props="{ children: '下一步' }"
-    :prev-button-props="{ children: '上一步' }" :finish-button-props="{ children: '完成' }" @finish="handleFinish"
+  <a-tour v-model:open="tourOpen" :steps="tourSteps" :mask="true" :next-button-props="{ children: $t('common.next') }"
+    :prev-button-props="{ children: $t('common.previous') }" :finish-button-props="{ children: $t('common.finish') }" @finish="handleFinish"
     @close="handleFinish" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { t } from '../../i18n';
+import { computed, onMounted, ref } from "vue";
 import SvgIcon from '../SvgIcon.vue';
+import LanguageSwitcher from '../LanguageSwitcher.vue';
 import { useResumeStore } from "../../store/useResumeStore";
 import type { TourProps } from 'ant-design-vue';
 
@@ -41,18 +36,18 @@ const setting = ref(null);
 const templateStore = ref(null);
 const tourOpen = ref(false); // 控制引导是否打开
 
-const tourSteps: TourProps['steps'] = [
+const tourSteps = computed<TourProps['steps']>(() => [
   {
-    title: "网站配置",
-    description: "请先进入网站配置，完善基本信息（否则无法使用大模型润色！）",
+    title: t('nav.settings'),
+    description: t('tour.settings'),
     target: () => setting.value,
   },
   {
-    title: "选择模板",
-    description: "然后进入模板市场，挑选适合你的简历模板。",
+    title: t('tour.chooseTemplate'),
+    description: t('tour.templates'),
     target: () => templateStore.value,
   }
-];
+]);
 
 
 

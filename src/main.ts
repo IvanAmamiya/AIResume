@@ -2,6 +2,8 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import Antd from 'ant-design-vue';
 import App from './App.vue';
+import { i18n, t } from './i18n';
+import { watchEffect } from 'vue';
 import 'ant-design-vue/dist/reset.css';
 import 'virtual:svg-icons-register'
 import router from './router'; // 引入路由
@@ -20,8 +22,12 @@ pinia.use(piniaPersist) // 启用持久化功能
 
 
 const app = createApp(App);
+app.use(i18n);
 app.use(router);
 app.use(pinia);
 app.directive('lazy', lazyLoad);
 app.use(Antd);
 app.mount('#app');
+watchEffect(() => {
+  document.title = t((router.currentRoute.value.meta.titleKey as string) || 'title.default');
+});

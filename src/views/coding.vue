@@ -1,6 +1,6 @@
 <template>
   <div class="coding">
-    <a-result status="403" title="功能开发中" sub-title="抱歉，该功能正在开发中，敬请期待...">
+    <a-result status="403" :title="$t('development.title')" :sub-title="$t('development.description')">
       <template #icon>
         <div class="coding-icon">
           <loading-outlined spin />
@@ -8,17 +8,12 @@
       </template>
       <template #extra>
         <a-space>
-          <a-button type="primary" @click="$router.push('/')">
-            返回首页
-          </a-button>
-          <a-button @click="handleFeedback">
-            功能反馈
-          </a-button>
+          <a-button type="primary" @click="$router.push('/')"> {{ $t('common.home') }} </a-button>
+          <a-button @click="handleFeedback"> {{ $t('common.feedback') }} </a-button>
         </a-space>
       </template>
       <template #description>
-        <p class="description">
-          预计发布时间：{{ releaseDate }}
+        <p class="description"> {{ $t('development.release') }}{{ releaseDate }}
         </p>
       </template>
     </a-result>
@@ -26,13 +21,14 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '../i18n';
 import { LoadingOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 
-const releaseDate = '2024年Q2';
+const releaseDate = t('development.date');
 
 const handleFeedback = () => {
-  message.success('感谢您的关注，我们会加快开发进度！');
+  message.success(t('development.thanks'));
 };
 </script>
 

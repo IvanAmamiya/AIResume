@@ -1,10 +1,11 @@
+import { t } from '../i18n';
 import type { Template } from '../types/template';
 
 export const getTemplates = async (): Promise<Template[]> => {
   try {
     const response = await fetch('/templates.json'); // 使用绝对路径
     if (!response.ok) {
-      throw new Error('无法获取模板列表');
+      throw new Error(t('notice.templatesUnavailable'));
     }
     return await response.json();
   } catch (error) {

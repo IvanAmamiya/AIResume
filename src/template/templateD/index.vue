@@ -8,7 +8,7 @@
           <h1 class="name">{{ resume.personalInfo.name }}</h1>
           <div class="basic-info">
             <span v-if="resume.personalInfo.gender">{{ resume.personalInfo.gender }}</span>
-            <span v-if="resume.personalInfo.age">{{ resume.personalInfo.age }}岁</span>
+            <span v-if="resume.personalInfo.age">{{ resume.personalInfo.age }}{{ $t('label.ageUnit') }}</span>
             <span v-if="resume.personalInfo.university">{{ resume.personalInfo.university }}</span>
             <span v-if="resume.personalInfo.major">{{ resume.personalInfo.major }}</span>
             <span v-if="resume.personalInfo.politicalStatus">{{ resume.personalInfo.politicalStatus }}</span>
@@ -25,12 +25,11 @@
               <i class="fas fa-globe"></i>{{ resume.personalInfo.website }}
             </a>
           </div>
-          <div v-if="resume.personalInfo.applicationPosition" class="job-target">
-            意向职位: {{ resume.personalInfo.applicationPosition }}
+          <div v-if="resume.personalInfo.applicationPosition" class="job-target"> {{ $t('label.positionColon') }} {{ resume.personalInfo.applicationPosition }}
           </div>
         </div>
         <div v-if="resume.personalInfo.avatar" class="avatar">
-          <img :src="resume.personalInfo.avatar" alt="头像">
+          <img :src="resume.personalInfo.avatar" :alt="$t('label.avatar')">
         </div>
       </div>
     </header>
@@ -40,7 +39,7 @@
       <div class="section-icon">
         <i class="fas fa-user"></i>
       </div>
-      <h2 class="section-title">个人总结</h2>
+      <h2 class="section-title">{{ $t('section.summary') }}</h2>
       <div class="section-content summary" v-html="marked(resume.summary)"></div>
     </section>
 
@@ -49,7 +48,7 @@
       <div class="section-icon">
         <i class="fas fa-graduation-cap"></i>
       </div>
-      <h2 class="section-title">教育经历</h2>
+      <h2 class="section-title">{{ $t('section.education') }}</h2>
       <div class="section-content">
         <div v-for="edu in resume.education" :key="edu.id" class="education-item">
           <div class="edu-main">
@@ -57,7 +56,7 @@
             <span v-if="edu.major" class="major">{{ edu.major }}</span>
             <span v-if="edu.degree" class="degree">{{ edu.degree }}</span>
           </div>
-          <div v-if="edu.startDate" class="edu-time">{{ edu.startDate }} ~ {{ edu.endDate || '至今' }}</div>
+          <div v-if="edu.startDate" class="edu-time">{{ edu.startDate }} ~ {{ edu.endDate || $t('common.present') }}</div>
         </div>
       </div>
     </section>
@@ -67,13 +66,13 @@
       <div class="section-icon">
         <i class="fas fa-briefcase"></i>
       </div>
-      <h2 class="section-title">工作经历</h2>
+      <h2 class="section-title">{{ $t('section.work') }}</h2>
       <div class="section-content">
         <div v-for="work in resume.workExperience" :key="work.id" class="work-item">
           <div class="work-header">
             <h3 class="company">{{ work.company }}</h3>
             <div v-if="work.position" class="position">{{ work.position }}</div>
-            <span v-if="work.startDate" class="time">{{ work.startDate }} ~ {{ work.endDate || '至今' }}</span>
+            <span v-if="work.startDate" class="time">{{ work.startDate }} ~ {{ work.endDate || $t('common.present') }}</span>
           </div>
 
           <div v-if="work.description" class="description" v-html="marked(work.description)"></div>
@@ -86,13 +85,13 @@
       <div class="section-icon">
         <i class="fas fa-project-diagram"></i>
       </div>
-      <h2 class="section-title">项目经历</h2>
+      <h2 class="section-title">{{ $t('section.projects') }}</h2>
       <div class="section-content">
         <div v-for="project in resume.projects" :key="project.id" class="project-item">
           <div class="project-header">
             <h3 class="project-name">{{ project.projectName }}</h3>
             <div v-if="project.role" class="role">{{ project.role }}</div>
-            <span v-if="project.startDate" class="time">{{ project.startDate }} ~ {{ project.endDate || '至今' }}</span>
+            <span v-if="project.startDate" class="time">{{ project.startDate }} ~ {{ project.endDate || $t('common.present') }}</span>
           </div>
 
           <div v-if="project.briefIntroduction" class="brief" v-html="marked(project.briefIntroduction)"></div>
@@ -109,7 +108,7 @@
       <div class="section-icon">
         <i class="fas fa-tools"></i>
       </div>
-      <h2 class="section-title">技能特长</h2>
+      <h2 class="section-title">{{ $t('section.skillsSummary') }}</h2>
       <div class="section-content">
         <div class="skills-list">
           <p v-for="skill in resume.skills" :key="skill.id" class="skill-item" v-html="marked(skill.skillName)"></p>
@@ -122,7 +121,7 @@
       <div class="section-icon">
         <i class="fas fa-award"></i>
       </div>
-      <h2 class="section-title">荣誉奖项</h2>
+      <h2 class="section-title">{{ $t('section.honors') }}</h2>
       <div class="section-content">
         <div v-for="honor in resume.honors" :key="honor.id" class="honor-item">
           <span class="honor-name" v-html="marked(honor.honorName)"></span>

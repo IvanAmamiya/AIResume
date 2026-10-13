@@ -55,6 +55,19 @@ npm install
 npm run dev
 ```
 
+### 界面语言与测试
+
+导航栏支持中文、English 和日本語，选择会保存在浏览器中。界面提示、日期控件和简历模板的固定标题随语言切换；用户填写的简历正文、姓名和已保存的字段值保持不变。
+
+语言资源位于 `src/i18n/locales/`。添加或修改文案时，请同步三个语言文件中的键和插值参数。
+
+```bash
+npm test
+npm run build:prod
+```
+
+测试使用模拟流，不需要 API Key，也不会调用真实模型服务。
+
 ## 🔥想自己部署同样的项目？
 
 点击此处链接，[发行版本](https://github.com/weidong-repo/AIResume/releases)

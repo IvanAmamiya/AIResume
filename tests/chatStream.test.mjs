@@ -101,19 +101,19 @@ test('worker sends exactly one terminal response for EOF and errors', async () =
   try {
     await import(pathToFileURL(join(temporaryDir, 'aiWorker.mjs')).href);
     const cases = [
-      [() => new Response(`data: ${delta('ok')}`, { status: 200 }), 'ok'],
-      [() => new Response('data: invalid\n\n'), '解析流数据时出错，请稍后重试'],
-      [() => { throw new Error('offline'); }, '请求失败，请稍后重试'],
-      [() => new Response('', { status: 401 }), '认证失败，请检查 API Key 是否正确'],
-      [() => new Response('', { status: 500 }), '请求失败，错误码: 500'],
-      [() => new Response(null), '服务器未返回流数据'],
+      [() => new Response(`data: ${delta('ok')}`, { status: 200 }), { result: 'ok' }],
+      [() => new Response('data: invalid\n\n'), { errorKey: 'worker.parse', errorParams: {} }],
+      [() => { throw new Error('offline'); }, { errorKey: 'worker.request', errorParams: {} }],
+      [() => new Response('', { status: 401 }), { errorKey: 'worker.auth', errorParams: {} }],
+      [() => new Response('', { status: 500 }), { errorKey: 'worker.http', errorParams: { status: 500 } }],
+      [() => new Response(null), { errorKey: 'worker.empty', errorParams: {} }],
     ];
     for (const [response, expected] of cases) {
       responses.length = 0;
       globalThis.fetch = async () => response();
       await globalThis.self.onmessage({ data: { taskId: 7, messages: [], userApiKey: 'test', model: 'test', API_URL: 'https://example.invalid' } });
       const terminal = responses.filter((message) => message.isComplete);
-      assert.deepEqual(terminal, [{ taskId: 7, isComplete: true, result: expected }]);
+      assert.deepEqual(terminal, [{ taskId: 7, isComplete: true, result: '', ...expected }]);
     }
   } finally {
     // 恢复全局对象，避免模拟环境影响后续测试。

@@ -1,6 +1,6 @@
 <template>
   <a-collapse class="work-experience-collapse">
-    <a-collapse-panel key="1" header="工作经历">
+    <a-collapse-panel key="1" :header="$t('section.work')">
       <a-space direction="vertical" style="width: 100%">
         <!-- 工作经历列表 -->
         <div
@@ -18,36 +18,36 @@
               class="item-drag-handle"
               type="button"
               draggable="true"
-              aria-label="拖拽调整工作经历顺序"
+              :aria-label="$t('work.reorder')"
               @dragstart="onDragStart(index, $event)"
               @dragend="onDragEnd"
             >
               <MenuOutlined />
             </button>
-            <h4>工作经历 #{{ index + 1 }}</h4>
-            <a-popconfirm title="确定要删除当前技能？" ok-text="删除" cancel-text="取消" @confirm="removeWork(work.id)">
+            <h4>{{ $t('work.number') }}{{ index + 1 }}</h4>
+            <a-popconfirm :title="$t('skills.confirmDelete')" :ok-text="$t('common.delete')" :cancel-text="$t('common.cancel')" @confirm="removeWork(work.id)">
               <template #icon><question-circle-outlined style="color: red" /></template>
-              <a-button type="link" danger> 删除</a-button>
+              <a-button type="link" danger> {{ $t('common.delete') }}</a-button>
             </a-popconfirm>
           </div>
 
           <a-form layout="vertical">
             <a-row gutter="24">
               <a-col :span="12">
-                <a-input v-model:value="work.company" placeholder="请输入公司名称" addonBefore="公司" />
+                <a-input v-model:value="work.company" :placeholder="$t('work.companyPlaceholder')" :addonBefore="$t('label.company')" />
               </a-col>
               <a-col :span="12">
-                <a-input v-model:value="work.position" placeholder="请输入职位" addonBefore="职位" />
+                <a-input v-model:value="work.position" :placeholder="$t('work.positionPlaceholder')" :addonBefore="$t('label.jobTitle')" />
               </a-col>
             </a-row>
 
             <a-row gutter="24" style="margin-top: 16px">
               <a-col :span="12">
-                <a-date-picker v-model:value="work.startDate" placeholder="开始时间" style="width: 100%" format="YYYY-MM-DD"
+                <a-date-picker v-model:value="work.startDate" :placeholder="$t('label.startDate')" style="width: 100%" format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD" />
               </a-col>
               <a-col :span="12">
-                <a-date-picker v-model:value="work.endDate" placeholder="结束时间" style="width: 100%" format="YYYY-MM-DD"
+                <a-date-picker v-model:value="work.endDate" :placeholder="$t('label.endDate')" style="width: 100%" format="YYYY-MM-DD"
                   value-format="YYYY-MM-DD" />
               </a-col>
             </a-row>
@@ -57,7 +57,7 @@
                     你返回的内容换行表示一个要点，不用md语法，不要隔行，
                     层次清晰分明：\n${work.description}`" :extend="`下面这个是我简历中的过往工作描述，我可以从哪些方面扩展优化？你的回复用文本就行，不需要md语法，给我一些思路：
                     \n${work.description}`" @update="(content: string) => work.description = content">
-              <a-textarea v-model:value="work.description" placeholder="请输入工作描述" :auto-size="{ minRows: 2, maxRows: 5 }"
+              <a-textarea v-model:value="work.description" :placeholder="$t('work.descriptionPlaceholder')" :auto-size="{ minRows: 2, maxRows: 5 }"
                 style="margin-top: 16px" />
             </AIEnhancePopover>
 
@@ -68,14 +68,14 @@
 
         <!-- 添加按钮 -->
         <a-button type="dashed" block @click="addWork" style="margin-top: 16px">
-          <plus-outlined /> 添加工作经历
-        </a-button>
+          <plus-outlined /> {{ $t('work.add') }} </a-button>
       </a-space>
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { computed, ref, watch } from 'vue';
 import { PlusOutlined, MenuOutlined } from '@ant-design/icons-vue';
 import { useResumeStore } from '../../../store';
@@ -102,7 +102,7 @@ const addWork = () => {
 // 删除工作经历
 const removeWork = (id: number) => {
   resumeStore.deleteWorkExperience(id)
-  message.success('工作经历删除成功！');
+  message.success(t('work.deleted'));
 };
 
 const onDragStart = (index: number, event: DragEvent) => {

@@ -6,34 +6,33 @@
         <h1 class="name" v-if="resume.personalInfo.name">{{ resume.personalInfo.name }}</h1>
         <div class="info-grid">
           <div class="info-item" v-if="resume.personalInfo.gender">
-            <span class="label">性别：</span>{{ resume.personalInfo.gender }}
+            <span class="label">{{ $t('label.genderColon') }}</span>{{ resume.personalInfo.gender }}
           </div>
           <div class="info-item" v-if="resume.personalInfo.age">
-            <span class="label">年龄：</span>{{ resume.personalInfo.age }}岁
-          </div>
+            <span class="label">{{ $t('label.ageColon') }}</span>{{ resume.personalInfo.age }}{{ $t('label.ageUnit') }} </div>
           <div class="info-item" v-if="resume.personalInfo.politicalStatus">
-            <span class="label">政治面貌：</span>{{ resume.personalInfo.politicalStatus }}
+            <span class="label">{{ $t('label.politicalColon') }}</span>{{ resume.personalInfo.politicalStatus }}
           </div>
           <div class="info-item" v-if="resume.personalInfo.phone">
-            <span class="label">电话：</span>{{ resume.personalInfo.phone }}
+            <span class="label">{{ $t('label.phoneColon') }}</span>{{ resume.personalInfo.phone }}
           </div>
           <div class="info-item" v-if="resume.personalInfo.email">
-            <span class="label">邮箱：</span>{{ resume.personalInfo.email }}
+            <span class="label">{{ $t('label.emailColon') }}</span>{{ resume.personalInfo.email }}
           </div>
           <div class="info-item" v-if="resume.personalInfo.university">
-            <span class="label">学校：</span>{{ resume.personalInfo.university }}
+            <span class="label">{{ $t('label.schoolColon') }}</span>{{ resume.personalInfo.university }}
           </div>
           <div class="info-item" v-if="resume.personalInfo.major">
-            <span class="label">专业：</span>{{ resume.personalInfo.major }}
+            <span class="label">{{ $t('label.majorColon') }}</span>{{ resume.personalInfo.major }}
           </div>
           <div class="info-item" v-if="resume.personalInfo.website">
-            <span class="label">网站：</span>
+            <span class="label">{{ $t('label.websiteColon') }}</span>
             <a :href="resume.personalInfo.website" target="_blank">{{ resume.personalInfo.website }}</a>
           </div>
         </div>
       </div>
       <div class="avatar" v-if="resume.personalInfo.avatar">
-        <img :src="resume.personalInfo.avatar" alt="个人照片">
+        <img :src="resume.personalInfo.avatar" :alt="$t('label.photo')">
       </div>
     </section>
 
@@ -42,7 +41,7 @@
 
     <!-- 荣誉奖项 -->
     <section class="section" v-if="resume.honors.length" :style="sectionStyle('honors')">
-      <h2 class="section-title">荣誉奖项</h2>
+      <h2 class="section-title">{{ $t('section.honors') }}</h2>
       <ul class="list">
         <li v-for="honor in resume.honors" :key="honor.id" v-html="marked(honor.honorName)"></li>
       </ul>
@@ -50,12 +49,12 @@
 
     <!-- 教育经历 -->
     <section class="section" v-if="resume.education.length" :style="sectionStyle('education')">
-      <h2 class="section-title">教育经历</h2>
+      <h2 class="section-title">{{ $t('section.education') }}</h2>
       <div class="experience-list">
         <div class="experience-item" v-for="edu in resume.education" :key="edu.id">
           <div class="item-header">
             <h3 class="institution">{{ edu.school }}</h3>
-            <span v-if="edu.startDate" class="duration">{{ edu.startDate }} - {{ edu.endDate || '至今' }}</span>
+            <span v-if="edu.startDate" class="duration">{{ edu.startDate }} - {{ edu.endDate || $t('common.present') }}</span>
           </div>
           <p class="degree">{{ edu.degree }} - {{ edu.major }}</p>
         </div>
@@ -64,7 +63,7 @@
 
     <!-- 技能特长 -->
     <section class="section" v-if="resume.skills.length" :style="sectionStyle('skills')">
-      <h2 class="section-title">技能特长</h2>
+      <h2 class="section-title">{{ $t('section.skillsSummary') }}</h2>
       <ul class="skill-list">
         <li v-for="skill in resume.skills" :key="skill.id">{{ skill.skillName }}</li>
       </ul>
@@ -72,13 +71,13 @@
 
     <!-- 工作/实习经历 -->
     <section class="section" v-if="resume.workExperience.length" :style="sectionStyle('workExperience')">
-      <h2 class="section-title">工作/实习经历</h2>
+      <h2 class="section-title">{{ $t('section.workInternships') }}</h2>
       <div class="experience-list">
         <div class="experience-item" v-for="work in resume.workExperience" :key="work.id">
           <div class="item-header">
             <p class="company">{{ work.company }}</p>
             <h3 class="position">{{ work.position }}</h3>
-            <span v-if="work.startDate" class="duration">{{ work.startDate }} - {{ work.endDate || '至今' }}</span>
+            <span v-if="work.startDate" class="duration">{{ work.startDate }} - {{ work.endDate || $t('common.present') }}</span>
           </div>
 
           <ul class="description-list">
@@ -90,13 +89,13 @@
 
     <!-- 项目经验 -->
     <section class="section" v-if="resume.projects.length" :style="sectionStyle('projects')">
-      <h2 class="section-title">项目经验</h2>
+      <h2 class="section-title">{{ $t('section.projectsSummary') }}</h2>
       <div class="experience-list">
         <div class="experience-item" v-for="project in resume.projects" :key="project.id">
           <div class="item-header">
             <h3 class="project-name">{{ project.projectName }}</h3>
             <p class="role">{{ project.role }}</p>
-            <span v-if="project.startDate" class="duration">{{ project.startDate }} - {{ project.endDate || '至今'
+            <span v-if="project.startDate" class="duration">{{ project.startDate }} - {{ project.endDate || $t('common.present')
               }}</span>
           </div>
           <p class="project-intro" v-html="marked(project.briefIntroduction)"></p>
@@ -109,7 +108,7 @@
 
     <!-- 自我评价 -->
     <section class="section" v-if="resume.summary" :style="sectionStyle('summary')">
-      <h2 class="section-title">自我评价</h2>
+      <h2 class="section-title">{{ $t('section.selfEvaluation') }}</h2>
       <p class="summary" v-html="marked(resume.summary)"></p>
     </section>
   </div>

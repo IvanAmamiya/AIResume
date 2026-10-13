@@ -1,4 +1,5 @@
 import type { DialogueHistory } from "../types/aiDialogue";
+import { t } from '../i18n';
 
 export class WorkerPool {
   private workers: Worker[] = []; // Worker 线程池
@@ -19,10 +20,10 @@ export class WorkerPool {
       const worker = new Worker(new URL("./aiWorker.ts", import.meta.url), { type: "module" });
       this.workers.push(worker);
       worker.onmessage = (event) => {
-        const { taskId, result, isComplete } = event.data;
+        const { taskId, result, isComplete, errorKey, errorParams } = event.data;
         const task = this.queue.find((t) => t.taskId === taskId);
         if (task) {
-          task.onResponse(result, isComplete);
+          task.onResponse(errorKey ? t(errorKey, errorParams ?? {}) : result, isComplete);
         }
         if (isComplete) {
           this.activeTasks.delete(taskId);
@@ -72,8 +73,8 @@ export class WorkerPool {
         worker.postMessage({ taskId, messages: clonedMessages, userApiKey, model, API_URL });
         console.log(`任务${taskId}分配给 Worker:${worker}`);
         worker.onmessage = (event) => {
-          const { taskId, result, isComplete } = event.data;
-          onResponse(result, isComplete);
+          const { taskId, result, isComplete, errorKey, errorParams } = event.data;
+          onResponse(errorKey ? t(errorKey, errorParams ?? {}) : result, isComplete);
           if (isComplete) {
             this.activeTasks.delete(taskId);
             this.workers.push(worker);
@@ -81,7 +82,7 @@ export class WorkerPool {
           }
         };
       } catch (error) {
-        onResponse("数据传输失败", true);
+        onResponse(t('worker.transfer'), true);
         this.workers.push(worker);
         this.processQueue();
       }

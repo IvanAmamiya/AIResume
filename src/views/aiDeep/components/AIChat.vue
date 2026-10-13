@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { ref, nextTick, reactive } from "vue"
 import { sendToQwenAIDialogue } from "../../../api/qwenAPI"
 import type { DialogueHistory, AIDialogue } from "../../../types/aiDialogue"
@@ -91,14 +92,14 @@ const sendMessage = async () => {
           aiEnhanceText = match[1].trim();
           resumeProject.value = aiEnhanceText;
           // 替换掉ai回复中的```resumt  ```信息
-          messages.value[messages.value.length - 1].content = messages.value[messages.value.length - 1].content.replace(/```resume[\s\S]*?```/g, "`已自动填充进右侧输入框`");
+          messages.value[messages.value.length - 1].content = messages.value[messages.value.length - 1].content.replace(/```resume[\s\S]*?```/g, t('chat.autofilled'));
         }
       }
       scrollToBottom();
     });
   } catch (error) {
     console.error("AI 处理失败:", error);
-    messages.value.push({ role: "assistant", content: "AI 处理失败，请稍后再试。" });
+    messages.value.push({ role: "assistant", content: t('chat.failed') });
   } finally {
     isLoading.value = false;
   }
@@ -127,7 +128,7 @@ const endInterview = async () => {
     });
   } catch (error) {
     console.error("AI 处理失败:", error);
-    messages.value.push({ role: "assistant", content: "AI 处理失败，请稍后再试。" });
+    messages.value.push({ role: "assistant", content: t('chat.failed') });
   } finally {
     isLoading.value = false;
   }
@@ -147,14 +148,14 @@ const restart = () => {
 <template>
   <div class="chat-container">
     <div class="chat-history" ref="chatHistoryRef">
-      <a-alert show-icon message="AI深度交流-根据您所填的项目、工作等通过问答方式对您的经历进行扩展优化或者模拟面试问答！" type="info" />
-      <a-alert show-icon message="tips：使用前请优先填写右侧的岗位jd以及工作/项目经历！" type="warning " closable />
+      <a-alert show-icon :message="$t('chat.intro')" type="info" />
+      <a-alert show-icon :message="$t('chat.inputReminder')" type="warning " closable />
       <!-- 让用户选择是经历扩展还是模拟面试 -->
       <a-space wrap class="button-group" v-if="userChoose === undefined || userChoose === null" id="ai-choose-content">
-        <a-button type="primary" @click="choose(true)">经历深挖</a-button>
-        <a-button type="primary" @click="choose(false)"> 模拟面试</a-button>
+        <a-button type="primary" @click="choose(true)">{{ $t('chat.explore') }}</a-button>
+        <a-button type="primary" @click="choose(false)"> {{ $t('chat.interview') }}</a-button>
       </a-space>
-      <div v-else style="text-align: center;"><a-tag color="green">{{ userChoose ? '经历深挖' : '模拟面试' }}</a-tag></div>
+      <div v-else style="text-align: center;"><a-tag color="green">{{ userChoose ? $t('chat.explore') : $t('chat.interview') }}</a-tag></div>
       <div v-for="(msg, index) in messages" :key="index" class="message-item" :class="msg.role">
         <div class="message-content">
           <div class="message-text" v-html="formatMessage(msg.content)"></div>
@@ -162,39 +163,37 @@ const restart = () => {
       </div>
       <!-- 如果用户选择了模拟面试，则显示结束面试，然后获取面试结果 -->
       <div v-show="!userChoose && messages.length > 5 && !end" style="text-align: center;">
-        <a-button type="primary" @click="endInterview()" :disabled="isLoading">结束面试</a-button>
+        <a-button type="primary" @click="endInterview()" :disabled="isLoading">{{ $t('chat.endInterview') }}</a-button>
       </div>
 
       <div v-if="end" class="interview-result">
-        <a-badge-ribbon :text="'AI评分：' + interviewResultScore + '分'"
+        <a-badge-ribbon :text="$t('chat.scorePrefix') + interviewResultScore + $t('chat.scoreUnit')"
           :color="interviewResultScore >= 60 ? 'green' : 'red'">
-          <a-card title="AI评估面试结果" size="small" class="result-card">
+          <a-card :title="$t('chat.result')" size="small" class="result-card">
             <div class="message-text result-content" v-html="marked(interviewResult)"></div>
           </a-card>
         </a-badge-ribbon>
       </div>
 
       <div v-if="end" style="text-align: center;">
-        <a-button type="primary" @click="restart()" :disabled="isLoading">重新开始</a-button>
+        <a-button type="primary" @click="restart()" :disabled="isLoading">{{ $t('chat.restart') }}</a-button>
       </div>
 
     </div>
 
     <!-- 输入区域 -->
     <div v-if="userChoose === undefined || userChoose === null" style="text-align: center;">
-      <p style="color: red;">请先在上方按钮中选择"经历深挖"或者"模拟面试"！<span @click="beginTour"
-          style="border-radius: 5px;background-color: #1677FF;font-size: 12px;color: white;padding: 3px;cursor: pointer;">使用说明</span>
+      <p style="color: red;">{{ $t('chat.chooseFirst') }}<span @click="beginTour"
+          style="border-radius: 5px;background-color: #1677FF;font-size: 12px;color: white;padding: 3px;cursor: pointer;">{{ $t('common.guide') }}</span>
       </p>
     </div>
     <div class="chat-input" id="ai-chat-content">
 
-      <a-textarea v-model:value="message.content" :rows="3" placeholder="输入消息，Enter 发送..." :disabled="isLoading || end"
+      <a-textarea v-model:value="message.content" :rows="3" :placeholder="$t('chat.messagePlaceholder')" :disabled="isLoading || end"
         @keydown.enter.prevent="sendMessage" />
       <div class="send-button">
         <a-button type="primary" :loading="isLoading" @click="sendMessage"
-          :disabled="!message.content.trim() || userChoose === undefined || userChoose === null || end">
-          发 送
-        </a-button>
+          :disabled="!message.content.trim() || userChoose === undefined || userChoose === null || end"> {{ $t('chat.send') }} </a-button>
         <!-- TODO -->
         <!-- <a-button type="primary" :loading="isLoading" :disabled="(messages.length < 3)">
           AI帮答

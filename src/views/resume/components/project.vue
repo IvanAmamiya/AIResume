@@ -1,6 +1,6 @@
 <template>
   <a-collapse class="project-collapse" accordion>
-    <a-collapse-panel key="1" header="项目经历">
+    <a-collapse-panel key="1" :header="$t('section.projects')">
       <a-space direction="vertical" style="width: 100%">
         <!-- 项目经历列表 -->
         <div
@@ -18,36 +18,36 @@
               class="item-drag-handle"
               type="button"
               draggable="true"
-              aria-label="拖拽调整项目经历顺序"
+              :aria-label="$t('projects.reorder')"
               @dragstart="onDragStart(index, $event)"
               @dragend="onDragEnd"
             >
               <MenuOutlined />
             </button>
-            <h4>项目经历 #{{ index + 1 }}</h4>
-            <a-popconfirm title="确定要删除当前项目经历？" ok-text="删除" cancel-text="取消" @confirm="removeProject(project.id)">
+            <h4>{{ $t('projects.number') }}{{ index + 1 }}</h4>
+            <a-popconfirm :title="$t('projects.confirmDelete')" :ok-text="$t('common.delete')" :cancel-text="$t('common.cancel')" @confirm="removeProject(project.id)">
               <template #icon><question-circle-outlined style="color: red" /></template>
-              <a-button type="link" danger>删除</a-button>
+              <a-button type="link" danger>{{ $t('common.delete') }}</a-button>
             </a-popconfirm>
           </div>
 
           <a-form layout="vertical">
             <a-row gutter="24">
               <a-col :span="12">
-                <a-input v-model:value="project.projectName" placeholder="请输入项目名称" addon-before="项目名称" />
+                <a-input v-model:value="project.projectName" :placeholder="$t('projects.namePlaceholder')" :addon-before="$t('label.projectName')" />
               </a-col>
               <a-col :span="12">
-                <a-input v-model:value="project.role" placeholder="请输入您的角色" addon-before="角色" />
+                <a-input v-model:value="project.role" :placeholder="$t('projects.rolePlaceholder')" :addon-before="$t('label.role')" />
               </a-col>
             </a-row>
 
             <a-row gutter="24" style="margin-top: 16px">
               <a-col :span="12">
-                <a-date-picker v-model:value="project.startDate" placeholder="开始时间" style="width: 100%"
+                <a-date-picker v-model:value="project.startDate" :placeholder="$t('label.startDate')" style="width: 100%"
                   format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
               </a-col>
               <a-col :span="12">
-                <a-date-picker v-model:value="project.endDate" placeholder="结束时间" style="width: 100%"
+                <a-date-picker v-model:value="project.endDate" :placeholder="$t('label.endDate')" style="width: 100%"
                   format="YYYY-MM-DD" value-format="YYYY-MM-DD" />
               </a-col>
             </a-row>
@@ -57,7 +57,7 @@
                     层次清晰分明：${project.briefIntroduction}`" :extend="`下面这个是我简历中的过往项目简介，我可以从哪些方面扩展优化？给我一些思路：
                     \n${project.briefIntroduction}`"
               @update="(content: string) => project.briefIntroduction = content">
-              <a-textarea v-model:value="project.briefIntroduction" placeholder="请输入项目简介" addon-before="项目简介" rows="4"
+              <a-textarea v-model:value="project.briefIntroduction" :placeholder="$t('projects.introPlaceholder')" :addon-before="$t('label.projectIntro')" rows="4"
                 style="margin-top: 16px" />
             </AIEnhancePopover>
 
@@ -66,7 +66,7 @@
                     你返回的内容换行表示一个要点，不用md语法，不要隔行，
                     层次清晰分明：\n${project.description}`" :extend="`下面这个是我简历中的项目要点，我可以从哪些方面扩展优化？你的回复用文本就行，不需要md语法，给我一些思路：
                     \n${project.description}`" @update="(content: string) => project.description = content">
-              <a-textarea v-model:value="project.description" placeholder="请输入项目描述" addon-before="描述" rows="4"
+              <a-textarea v-model:value="project.description" :placeholder="$t('projects.descriptionPlaceholder')" :addon-before="$t('label.description')" rows="4"
                 style="margin-top: 16px" />
             </AIEnhancePopover>
           </a-form>
@@ -75,14 +75,14 @@
 
         <!-- 添加按钮 -->
         <a-button type="dashed" block @click="addProject" style="margin-top: 16px">
-          <PlusOutlined /> 添加项目经历
-        </a-button>
+          <PlusOutlined /> {{ $t('projects.add') }} </a-button>
       </a-space>
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { computed, ref, watch } from 'vue';
 import { PlusOutlined, MenuOutlined } from '@ant-design/icons-vue';
 import { useResumeStore } from '../../../store';
@@ -110,7 +110,7 @@ const addProject = () => {
 // 删除项目经历
 const removeProject = (id: number) => {
   resumeStore.deleteProject(id);
-  message.success('项目经历删除成功！');
+  message.success(t('projects.deleted'));
 };
 
 const onDragStart = (index: number, event: DragEvent) => {

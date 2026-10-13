@@ -1,45 +1,45 @@
 <template>
   <a-collapse v-model:activeKey="activeKey" class="personal-info-collapse">
-    <a-collapse-panel key="1" header="个人信息" class="personal-info-panel">
+    <a-collapse-panel key="1" :header="$t('section.personal')" class="personal-info-panel">
       <a-space direction="vertical" style="width: 100%" class="personal-info-space ">
         <!-- 姓名、联系电话-->
         <a-row gutter="24">
           <a-col :span="12">
-            <a-input v-model:value="personalInfo.name" placeholder="请输入姓名" addonBefore="姓名" />
+            <a-input v-model:value="personalInfo.name" :placeholder="$t('personal.namePlaceholder')" :addonBefore="$t('label.name')" />
           </a-col>
           <a-col :span="12">
-            <a-input v-model:value="personalInfo.phone" placeholder="请输入联系电话" addonBefore="联系电话" />
+            <a-input v-model:value="personalInfo.phone" :placeholder="$t('personal.phonePlaceholder')" :addonBefore="$t('label.phone')" />
           </a-col>
         </a-row>
 
         <!-- 电子邮箱、所在大学-->
         <a-row gutter="24">
           <a-col :span="12">
-            <a-input v-model:value="personalInfo.email" placeholder="请输入电子邮箱" addonBefore="电子邮箱" />
+            <a-input v-model:value="personalInfo.email" :placeholder="$t('personal.emailPlaceholder')" :addonBefore="$t('label.email')" />
           </a-col>
           <a-col :span="12">
-            <a-input v-model:value="personalInfo.university" placeholder="请输入所在大学" addonBefore="所在大学" />
+            <a-input v-model:value="personalInfo.university" :placeholder="$t('personal.universityPlaceholder')" :addonBefore="$t('label.university')" />
           </a-col>
         </a-row>
 
         <!-- 政治面貌、性别 -->
         <a-row gutter="24">
           <a-col :span="12">
-            <a-select v-model:value="personalInfo.politicalStatus" placeholder="请选择政治面貌" :options="politicalOptions"
+            <a-select v-model:value="personalInfo.politicalStatus" :placeholder="$t('personal.politicalPlaceholder')" :options="politicalOptions"
               allowClear style="width: 100%;" />
           </a-col>
           <a-col :span="12">
-            <a-select v-model:value="personalInfo.gender" placeholder="请选择性别" :options="genderOptions" allowClear
+            <a-select v-model:value="personalInfo.gender" :placeholder="$t('personal.genderPlaceholder')" :options="genderOptions" allowClear
               style="width: 100%;" />
           </a-col>
         </a-row>
         <!-- 专业、年龄 -->
         <a-row gutter="24">
           <a-col :span="12">
-            <a-input v-model:value="personalInfo.major" placeholder="请输入专业" addonBefore="专业" />
+            <a-input v-model:value="personalInfo.major" :placeholder="$t('education.majorPlaceholder')" :addonBefore="$t('label.major')" />
           </a-col>
           <a-col :span="12">
-            <a-input v-model:value="personalInfo.age" placeholder="请输入年龄" addonBefore="年龄" />
+            <a-input v-model:value="personalInfo.age" :placeholder="$t('personal.agePlaceholder')" :addonBefore="$t('label.age')" />
           </a-col>
         </a-row>
 
@@ -48,11 +48,11 @@
         <a-row gutter="24">
           <a-col :span="12">
             <!-- 个人网站 -->
-            <a-input v-model:value="personalInfo.website" placeholder="请输入个人网站" addonBefore="个人网站" />
+            <a-input v-model:value="personalInfo.website" :placeholder="$t('personal.websitePlaceholder')" :addonBefore="$t('label.website')" />
           </a-col>
           <a-col :span="12">
             <!-- 应聘岗位 -->
-            <a-input v-model:value="personalInfo.applicationPosition" placeholder="应聘岗位" addonBefore="岗位" />
+            <a-input v-model:value="personalInfo.applicationPosition" :placeholder="$t('personal.positionPlaceholder')" :addonBefore="$t('label.position')" />
           </a-col>
         </a-row>
         <!-- 头像上传 (base64) -->
@@ -66,7 +66,7 @@
             <template #default>
               <div class="upload-area">
                 <PlusOutlined />
-                <div style="margin-top: 8px">{{ personalInfo.avatar ? '更换头像' : '上传头像' }}</div>
+                <div style="margin-top: 8px">{{ personalInfo.avatar ? $t('personal.changePhoto') : $t('personal.uploadPhoto') }}</div>
               </div>
             </template>
           </a-upload>
@@ -78,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { ref, computed, watch } from 'vue';
 import { useResumeStore } from '../../../store';
 import { PlusOutlined } from '@ant-design/icons-vue';
@@ -90,18 +91,18 @@ const resumeStore = useResumeStore();
 const personalInfo = computed(() => resumeStore.personalInfo);
 
 // 政治面貌和性别选项
-const politicalOptions = [
-  { label: '中共党员', value: '中共党员' },
-  { label: '中共预备党员', value: '中共预备党员' },
-  { label: '共青团员', value: '共青团员' },
-  { label: '群众', value: '群众' },
-  { label: '其他', value: '其他' }
-];
-const genderOptions = [
-  { label: '男', value: '男' },
-  { label: '女', value: '女' },
-  { label: '其他', value: '其他' }
-];
+const politicalOptions = computed(() => [
+  { label: t('political.partyMember'), value: '中共党员' },
+  { label: t('political.probationary'), value: '中共预备党员' },
+  { label: t('political.youthLeague'), value: '共青团员' },
+  { label: t('political.none'), value: '群众' },
+  { label: t('common.other'), value: '其他' }
+]);
+const genderOptions = computed(() => [
+  { label: t('gender.male'), value: '男' },
+  { label: t('gender.female'), value: '女' },
+  { label: t('common.other'), value: '其他' }
+]);
 
 // 上传头像前的验证
 const beforeUpload = (file: File) => {

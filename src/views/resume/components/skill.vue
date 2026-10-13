@@ -1,6 +1,6 @@
 <template>
   <a-collapse class="skills-collapse">
-    <a-collapse-panel key="1" header="专业技能">
+    <a-collapse-panel key="1" :header="$t('section.skills')">
       <a-space direction="vertical" style="width: 100%">
         <!-- 技能列表 -->
         <div
@@ -18,16 +18,16 @@
               class="item-drag-handle"
               type="button"
               draggable="true"
-              aria-label="拖拽调整技能顺序"
+              :aria-label="$t('skills.reorder')"
               @dragstart="onDragStart(index, $event)"
               @dragend="onDragEnd"
             >
               <MenuOutlined />
             </button>
-            <h4>技能 #{{ index + 1 }}</h4>
-            <a-popconfirm title="确定要删除当前技能？" ok-text="删除" cancel-text="取消" @confirm="removeSkill(skill.id)">
+            <h4>{{ $t('skills.number') }}{{ index + 1 }}</h4>
+            <a-popconfirm :title="$t('skills.confirmDelete')" :ok-text="$t('common.delete')" :cancel-text="$t('common.cancel')" @confirm="removeSkill(skill.id)">
               <template #icon><question-circle-outlined style="color: red" /></template>
-              <a-button type="link" danger>删除</a-button>
+              <a-button type="link" danger>{{ $t('common.delete') }}</a-button>
             </a-popconfirm>
           </div>
 
@@ -35,7 +35,7 @@
             <AIEnhancePopover :description="`请帮我润色和优化以下内容，是我简历中的技能描述，
                     使其更加简洁、专业和吸引面试官，不要多余的文字说明：\n${skill.skillName}`" :extend="`下面这个是我简历中的技能描述，我可以从哪些方面扩展优化？你的回复用文本就行，不需要md语法，给我一些思路：
                     \n${skill.skillName}`" @update="(content: string) => skill.skillName = content">
-              <a-input v-model:value="skill.skillName" placeholder="请输入技能名称" addonBefore="技能" />
+              <a-input v-model:value="skill.skillName" :placeholder="$t('skills.namePlaceholder')" :addonBefore="$t('label.skill')" />
             </AIEnhancePopover>
 
 
@@ -45,14 +45,14 @@
 
         <!-- 添加按钮 -->
         <a-button type="dashed" block @click="addSkill" style="margin-top: 16px">
-          <plus-outlined /> 添加技能
-        </a-button>
+          <plus-outlined /> {{ $t('skills.add') }} </a-button>
       </a-space>
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script setup lang="ts">
+import { t } from '../../../i18n';
 import { computed, ref, watch } from 'vue';
 import { PlusOutlined, MenuOutlined } from '@ant-design/icons-vue';
 import { useResumeStore } from '../../../store';
@@ -76,7 +76,7 @@ const addSkill = () => {
 // 删除技能
 const removeSkill = (id: number) => {
   resumeStore.deleteSkill(id)
-  message.success('技能删除成功！');
+  message.success(t('skills.deleted'));
 };
 
 const onDragStart = (index: number, event: DragEvent) => {

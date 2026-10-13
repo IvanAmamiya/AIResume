@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '../../i18n';
 import { ref, onMounted, computed } from 'vue';
 import { message } from 'ant-design-vue';
 import { ShopOutlined, CheckCircleFilled } from '@ant-design/icons-vue';
@@ -23,7 +24,7 @@ onMounted(async () => {
   try {
     templates.value = await getTemplates();
   } catch (error) {
-    message.error('获取模板列表失败');
+    message.error(t('templates.failed'));
     console.error('获取模板列表失败:', error);
   }
 });
@@ -34,7 +35,7 @@ const handleTemplateChange = (id: String | null) => {
   const selectedTemplate = templates.value.find(t => t.id === id);
   if (selectedTemplate) {
     currentTemplate.value = selectedTemplate.id;
-    message.success(`成功切换到模板: ${selectedTemplate.name}`); // 提示选择成功
+    message.success(t('templates.changed', { name: selectedTemplate.name }));
   }
 };
 
@@ -54,9 +55,7 @@ const getTemplateImage = (template: Template): string => {
       <a-typography-title :level="2">
         <template #prefix>
           <shop-outlined />
-        </template>
-        模板市场
-      </a-typography-title>
+        </template> {{ $t('nav.templates') }} </a-typography-title>
     </div>
 
     <!-- 模板列表 -->
@@ -77,14 +76,13 @@ const getTemplateImage = (template: Template): string => {
             <div class="template-info">
               <div class="template-title">{{ template.name }}</div>
               <div class="template-author">
-                <!-- 链接 -->
-                作者：<a :href="String(template.link || '')" target="_blank">{{ template.author }}</a>
+                <!-- 链接 --> {{ $t('templates.author') }}<a :href="String(template.link || '')" target="_blank">{{ template.author }}</a>
               </div>
               <p class="template-description">{{ template.description }}</p>
               <a-button :type="currentTemplate === template.id ? 'text' : 'primary'"
                 :class="{ 'selected-button': currentTemplate === template.id }"
                 @click="handleTemplateChange(template.id)" size="small" block>
-                {{ currentTemplate === template.id ? '当前使用中' : '使用此模板' }}
+                {{ currentTemplate === template.id ? $t('templates.current') : $t('templates.use') }}
               </a-button>
             </div>
           </div>

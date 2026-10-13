@@ -5,6 +5,13 @@ import NarrowScreen from './components/narrow/index.vue';
 import { useResumeStore } from './store/useResumeStore';
 import { useSettingsStore } from './store/useSettingsStore';
 import { onMounted, ref, onBeforeMount } from 'vue';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
+import enUS from 'ant-design-vue/es/locale/en_US';
+import jaJP from 'ant-design-vue/es/locale/ja_JP';
+const { locale } = useI18n();
+const componentLocale = computed(() => ({ 'zh-CN': zhCN, en: enUS, ja: jaJP }[locale.value]));
 const settingsStore = useSettingsStore();
 const showNarrowScreen = ref(false);
 
@@ -28,22 +35,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <narrow-screen v-if="showNarrowScreen" />
-  <template v-else>
-    <Header />
-    <a-config-provider :theme="{
+  <a-config-provider :locale="componentLocale" :theme="{
       token: {
         colorPrimary: settingsStore.theme,
       },
     }">
+    <narrow-screen v-if="showNarrowScreen" />
+    <template v-else>
+      <Header />
       <router-view v-slot="{ Component }">
         <keep-alive include="aiDeep">
           <component :is="Component" />
         </keep-alive>
       </router-view>
-    </a-config-provider>
-    <ThemeSwitcher />
-  </template>
+      <ThemeSwitcher />
+    </template>
+  </a-config-provider>
 </template>
 
 

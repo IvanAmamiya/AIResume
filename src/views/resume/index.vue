@@ -6,36 +6,28 @@
     <div class="left">
       <div class="btn-group">
         <!-- 预览填充 -->
-        <a-popconfirm title="填充会覆盖当前数据，确定吗？" ok-text="确定" cancel-text="取消" @confirm="resumeStore.autoFillData">
+        <a-popconfirm :title="$t('resume.confirmFill')" :ok-text="$t('common.confirm')" :cancel-text="$t('common.cancel')" @confirm="resumeStore.autoFillData">
           <template #icon><question-circle-outlined style="color: red" /></template>
           <a-button type="primary" ghost>
-            <eye-outlined />
-            预览填充
-          </a-button>
+            <eye-outlined /> {{ $t('resume.fill') }} </a-button>
         </a-popconfirm>
 
         <!-- 清空数据 -->
-        <a-popconfirm title="确定要清空当前简历数据吗？" ok-text="清空" cancel-text="取消" @confirm="resumeStore.clearData">
+        <a-popconfirm :title="$t('resume.confirmClear')" :ok-text="$t('common.clear')" :cancel-text="$t('common.cancel')" @confirm="resumeStore.clearData">
           <template #icon><warning-outlined style="color: red" /></template>
           <a-button danger>
-            <delete-outlined />
-            清空数据
-          </a-button>
+            <delete-outlined /> {{ $t('resume.clearData') }} </a-button>
         </a-popconfirm>
 
         <!-- 导出数据 -->
         <a-button type="default" @click="resumeStore.exportData">
-          <download-outlined />
-          导出JSON
-        </a-button>
+          <download-outlined /> {{ $t('resume.exportJson') }} </a-button>
 
         <!-- 导入按钮 -->
         <a-upload v-model:fileList="fileList" :beforeUpload="handleFileUpload" :showUploadList="false"
           accept="application/json">
           <a-button type="dashed">
-            <upload-outlined />
-            导入JSON
-          </a-button>
+            <upload-outlined /> {{ $t('resume.importJson') }} </a-button>
         </a-upload>
       </div>
 
@@ -43,7 +35,7 @@
       <!-- 底部展示github图标 -->
       <div class="github-link">
         <a href="https://github.com/weidong-repo/AIResume" target="_blank">
-          <span class="github-star">如果您喜欢这个项目，请给个 Star 吧！</span>
+          <span class="github-star">{{ $t('resume.star') }}</span>
           <img src="https://img.shields.io/github/stars/weidong-repo/AIResume?style=social" alt="GitHub stars">
         </a>
       </div>
@@ -56,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import { t } from '../../i18n';
 import resumeEdit from './components/resumeEdit.vue';
 import resumePreview from './components/resumePreview.vue';
 import { useResumeStore } from "../../store/useResumeStore";
@@ -69,7 +62,7 @@ const fileList = ref<UploadProps["fileList"]>([]);
 // 处理文件上传
 const handleFileUpload = (file: File) => {
   if (file.type !== "application/json") {
-    message.error("请上传 JSON 文件！");
+    message.error(t('resume.jsonOnly'));
     return false;
   }
   resumeStore.importData(file);

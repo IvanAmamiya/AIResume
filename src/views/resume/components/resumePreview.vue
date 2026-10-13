@@ -2,13 +2,13 @@
 
   <div class="setting">
     <!-- 弹框模板设置 -->
-    <a-button type="primary" @click="resumeSettingClick" style="margin-right: 10px;">简历设置</a-button>
-    <a-modal v-model:open="open" title="简历基本设置">
+    <a-button type="primary" @click="resumeSettingClick" style="margin-right: 10px;">{{ $t('resume.settings') }}</a-button>
+    <a-modal v-model:open="open" :title="$t('resume.basicSettings')">
       <template #footer>
-        <a-button key="submit" type="primary" @click="resumeSettingClickOK">确定</a-button>
+        <a-button key="submit" type="primary" @click="resumeSettingClickOK">{{ $t('common.confirm') }}</a-button>
       </template>
       <!-- 选择模板 -->
-      <a-form-item label="简历模板选择" name="简历模板选择">
+      <a-form-item :label="$t('resume.template')" name="简历模板选择">
         <a-select v-model:value="currentTemplate" @change="handleTemplateChange" style="width: 150px;">
           <a-select-option v-for="item in templates" :key="item.id" :value="item.id">
             {{ item.name }}
@@ -16,38 +16,38 @@
         </a-select>
       </a-form-item>
       <!-- 设置简历主色调-->
-      <a-form-item label="简历主色调" name="简历主色调">
+      <a-form-item :label="$t('resume.primaryColor')" name="简历主色调">
         <input id="themeColor1" class="changeColor" type="color" v-model="resumeSetting.themeColor1"
           @change="(e) => themeColor1 = ((e.target as HTMLInputElement).value)" />
       </a-form-item>
       <!-- 设置简历副色调 -->
-      <a-form-item label="简历副色调" name="简历副色调">
+      <a-form-item :label="$t('resume.secondaryColor')" name="简历副色调">
         <input id="themeColor2" class="changeColor" type="color" v-model="resumeSetting.themeColor2"
           @change="(e) => themeColor2 = (e.target as HTMLInputElement).value" />
       </a-form-item>
       <!-- 设置字体大小 -->
-      <a-form-item label="字体大小" name="字体大小">
+      <a-form-item :label="$t('resume.fontSize')" name="字体大小">
         <a-slider v-model:value="fontSize" :min="12" :max="24" />
       </a-form-item>
       <!-- 设置段落间距 -->
-      <a-form-item label="段落间距" name="段落间距">
+      <a-form-item :label="$t('resume.paragraphSpacing')" name="段落间距">
         <a-slider v-model:value="paragraphSpacing" :min="0" :max="30" />
       </a-form-item>
       <!-- 设置区块间距 -->
-      <a-form-item label="区块间距" name="区块间距">
+      <a-form-item :label="$t('resume.sectionSpacing')" name="区块间距">
         <a-slider v-model:value="sectionSpacing" :min="0" :max="30" />
       </a-form-item>
       <!-- 设置左右页边距 -->
-      <a-form-item label="左右页边距" name="左右页边距">
+      <a-form-item :label="$t('resume.horizontalMargin')" name="左右页边距">
         <a-slider v-model:value="padding_left_right" :min="0" :max="65" />
       </a-form-item>
       <!-- 设置上下页边距 -->
-      <a-form-item label="上下页边距" name="上下页边距">
+      <a-form-item :label="$t('resume.verticalMargin')" name="上下页边距">
         <a-slider v-model:value="padding_top_bottom" :min="0" :max="35" />
       </a-form-item>
     </a-modal>
 
-    <a-button type="primary" @click="exportToPDF" id="export-button">导出PDF</a-button>
+    <a-button type="primary" @click="exportToPDF" id="export-button">{{ $t('resume.exportPdf') }}</a-button>
   </div>
   <div class="preview" ref="resumePreview" @mousedown="startDragging" @wheel.prevent="handleZoom">
     <div class="resume-content" :style="contentStyle">
@@ -58,6 +58,7 @@
 </template>
 
 <script lang="ts" setup>
+import { i18n, t } from '../../../i18n';
 import { ref, reactive, computed, onMounted, onBeforeUnmount, nextTick, watch, defineAsyncComponent, type ComponentOptions } from "vue";
 import { getTemplates } from "../../../utils/getTemplates";
 import type { Template } from "../../../types/template";
@@ -180,7 +181,7 @@ const resumeSettingClick = () => {
 
 const resumeSettingClickOK = () => {
   open.value = false;
-  message.success('设置成功');
+  message.success(t('notice.settingsSaved'));
 }
 
 // 导出简历为 PDF
@@ -206,6 +207,7 @@ const exportToPDF = async () => {
       const app = createApp(Component, {
         colorShades: colorShades.value,
       });
+      app.use(i18n);
       // 挂载组件
       app.mount(content);
       tempContainer.appendChild(content);
@@ -218,6 +220,7 @@ const exportToPDF = async () => {
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
       html2pdf().from(content).set(options).save().finally(() => {
+        app.unmount();
         // 清理临时容器
         document.body.removeChild(tempContainer);
       });
